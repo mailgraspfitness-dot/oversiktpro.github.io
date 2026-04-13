@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="no">
 <head>
@@ -6,630 +5,954 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>OversiktPro — Prisanalyse & Markedsinnsikt for Finn.no</title>
   <meta name="description" content="OversiktPro er en Chrome-utvidelse for FINN.no som viser markedsverdi, deal score, sikkerhet, prisendringer og markedsinnsikt direkte på bruktbilannonser." />
-  <meta name="theme-color" content="#f7fbff" />
+  <meta name="theme-color" content="#f0f6ff" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #f7fbff;
+      --finn-blue: #06befb;
+      --finn-core: #0063fb;
+      --finn-deep: #0047c8;
+      --finn-navy: #062058;
+
+      --bg: #f0f6ff;
       --surface: #ffffff;
-      --line: #dbe4ee;
-      --text: #0f172a;
-      --muted: #5f6f86;
-      --muted-2: #8a99ad;
-      --navy: #0f172a;
-      --sky: #0ea5e9;
-      --sky-soft: #eef8ff;
-      --good: #059669;
-      --good-bg: #ecfdf5;
-      --warn: #d97706;
-      --warn-bg: #fff7ed;
-      --shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
-      --radius: 26px;
+      --surface-2: #f5f9ff;
+      --line: #dce8ff;
+      --text: #06152e;
+      --muted: #4a6080;
+      --muted-2: #8aa0be;
+
+      --good: #00875a;
+      --good-bg: #e6f7f1;
+      --good-border: #b3e6d3;
+      --warn: #c05500;
+      --warn-bg: #fff3e8;
+
+      --shadow-sm: 0 2px 8px rgba(6, 32, 88, 0.07);
+      --shadow-md: 0 8px 32px rgba(6, 32, 88, 0.10);
+      --shadow-lg: 0 24px 80px rgba(6, 32, 88, 0.14);
       --max: 1200px;
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
+
     body {
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(125, 211, 252, 0.34), transparent 28%),
-        radial-gradient(circle at 82% 8%, rgba(59, 130, 246, 0.10), transparent 24%),
-        linear-gradient(180deg, #f7fbff 0%, #f8fafc 24%, #ffffff 100%);
+      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+      background: var(--bg);
       color: var(--text);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 50% at 10% 0%, rgba(6, 190, 251, 0.13) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 90% 15%, rgba(0, 99, 251, 0.09) 0%, transparent 55%),
+        radial-gradient(ellipse 40% 40% at 50% 100%, rgba(6, 32, 88, 0.06) 0%, transparent 60%);
     }
 
     a { color: inherit; text-decoration: none; }
-    .container { width: min(calc(100% - 32px), var(--max)); margin: 0 auto; }
+    .container { width: min(calc(100% - 48px), var(--max)); margin: 0 auto; position: relative; z-index: 1; }
 
+    /* ── HEADER ── */
     header {
       position: sticky;
       top: 0;
-      z-index: 50;
-      background: rgba(255,255,255,0.84);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid rgba(219, 228, 238, 0.9);
+      z-index: 100;
+      background: rgba(240, 246, 255, 0.82);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border-bottom: 1px solid rgba(220, 232, 255, 0.8);
     }
 
     .header-inner {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
-      padding: 18px 0;
+      gap: 24px;
+      padding: 16px 0;
     }
 
-    .brand {
+    .brand { display: flex; align-items: center; gap: 10px; }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--finn-deep), var(--finn-blue));
       display: flex;
-      flex-direction: column;
-      gap: 2px;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -0.05em;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 99, 251, 0.3);
     }
 
     .logo {
-      font-size: 28px;
-      font-weight: 900;
-      font-style: italic;
+      font-size: 17px;
+      font-weight: 800;
       letter-spacing: -0.03em;
       line-height: 1;
+      color: var(--text);
     }
 
     .brand-sub {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
+      font-size: 10px;
+      font-weight: 500;
       color: var(--muted-2);
+      letter-spacing: 0.04em;
+      margin-top: 2px;
     }
 
     nav {
       display: flex;
       align-items: center;
-      gap: 24px;
+      gap: 32px;
       color: var(--muted);
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 500;
     }
 
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 12px;
+    nav a { transition: color 0.15s; position: relative; }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -3px;
+      left: 0;
+      right: 0;
+      height: 1.5px;
+      background: var(--finn-core);
+      transform: scaleX(0);
+      transition: transform 0.2s ease;
+      border-radius: 2px;
     }
+    nav a:hover { color: var(--text); }
+    nav a:hover::after { transform: scaleX(1); }
+
+    .header-actions { display: flex; align-items: center; gap: 10px; }
 
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      min-height: 48px;
-      padding: 0 22px;
-      border-radius: 999px;
-      font-weight: 800;
-      border: 1px solid transparent;
-      transition: 0.18s ease;
+      gap: 7px;
+      min-height: 42px;
+      padding: 0 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: 'Inter', sans-serif;
+      border: 1.5px solid transparent;
       cursor: pointer;
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      white-space: nowrap;
     }
+    .btn:hover { transform: translateY(-2px); }
+    .btn:active { transform: translateY(0) scale(0.98); }
 
-    .btn:hover { transform: translateY(-1px); }
     .btn-primary {
-      background: var(--navy);
+      background: var(--finn-core);
       color: white;
-      box-shadow: 0 14px 30px rgba(15, 23, 42, 0.16);
+      box-shadow: 0 4px 16px rgba(0, 99, 251, 0.28);
     }
-    .btn-secondary {
-      background: rgba(255,255,255,0.88);
+    .btn-primary:hover { background: var(--finn-deep); box-shadow: 0 8px 28px rgba(0, 99, 251, 0.38); }
+
+    .btn-ghost {
+      background: transparent;
       color: var(--muted);
       border-color: var(--line);
     }
+    .btn-ghost:hover { background: white; color: var(--text); border-color: #b8cff5; }
 
+    .chrome-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: conic-gradient(#ea4335 0deg 90deg, #fbbc05 90deg 180deg, #34a853 180deg 270deg, #4285f4 270deg 360deg);
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    /* ── EYEBROW ── */
     .eyebrow {
       display: inline-flex;
       align-items: center;
-      padding: 8px 14px;
+      gap: 8px;
+      padding: 6px 14px 6px 8px;
       border-radius: 999px;
-      background: rgba(255,255,255,0.86);
-      border: 1px solid #dbeafe;
-      color: var(--muted);
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.20em;
-      box-shadow: 0 10px 24px rgba(15,23,42,0.05);
+      background: rgba(0, 99, 251, 0.07);
+      border: 1px solid rgba(0, 99, 251, 0.18);
+      color: var(--finn-core);
+      font-size: 12px;
+      font-weight: 600;
     }
 
+    .eyebrow-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--finn-blue);
+      animation: pulse-dot 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.35); opacity: 0.65; }
+    }
+
+    /* ── HERO ── */
     .hero {
       max-width: var(--max);
       margin: 0 auto;
-      padding: 78px 16px 88px;
+      padding: 86px 24px 96px;
       display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      gap: 54px;
+      grid-template-columns: 1fr 1.05fr;
+      gap: 64px;
       align-items: center;
+      position: relative;
+      z-index: 1;
     }
 
     h1 {
-      margin: 18px 0 0;
-      font-size: clamp(46px, 7vw, 74px);
-      line-height: 0.97;
+      margin: 20px 0 0;
+      font-size: clamp(48px, 6.5vw, 72px);
+      line-height: 0.95;
       letter-spacing: -0.055em;
-      max-width: 760px;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    h1 .accent {
+      background: linear-gradient(135deg, var(--finn-core) 20%, var(--finn-blue) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .lead {
       margin-top: 22px;
       color: var(--muted);
-      font-size: clamp(18px, 2vw, 22px);
-      line-height: 1.75;
-      max-width: 760px;
+      font-size: clamp(16px, 1.7vw, 18px);
+      line-height: 1.82;
+      font-weight: 400;
+      max-width: 500px;
     }
 
-    .buttons {
-      margin-top: 30px;
+    .hero-buttons {
+      margin-top: 34px;
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 12px;
     }
 
-    .hero-points {
+    .btn-lg {
+      min-height: 52px;
+      padding: 0 28px;
+      font-size: 15px;
+      border-radius: 12px;
+    }
+
+    .trust-row {
       margin-top: 26px;
       display: flex;
       flex-wrap: wrap;
-      gap: 18px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 700;
+      gap: 20px;
     }
 
-    .hero-points span {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 999px;
-      display: inline-block;
-    }
-
-    .dot-good { background: var(--good); }
-    .dot-sky { background: var(--sky); }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 30px;
-    }
-
-    .stat {
-      border-radius: 22px;
-      padding: 16px;
-      background: rgba(255,255,255,0.88);
-      border: 1px solid var(--line);
-      box-shadow: 0 12px 28px rgba(15,23,42,0.04);
-    }
-
-    .stat .label {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--muted-2);
-    }
-
-    .stat .value {
-      margin-top: 6px;
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .preview {
-      margin-top: 34px;
-      background: rgba(255,255,255,0.92);
-      border: 1px solid var(--line);
-      border-radius: 32px;
-      padding: 18px;
-      box-shadow: var(--shadow);
-    }
-
-    .preview-inner {
-      background: #f8fafc;
-      border: 1px solid #e8eff6;
-      border-radius: 26px;
-      padding: 18px;
-    }
-
-    .listing {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 16px 18px;
-      box-shadow: 0 8px 20px rgba(15,23,42,0.04);
-    }
-
-    .listing-top {
+    .trust-item {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .listing h3 {
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .listing p {
-      margin: 6px 0 0;
+      gap: 7px;
+      font-size: 13px;
+      font-weight: 500;
       color: var(--muted);
-      font-size: 14px;
     }
 
-    .listing-tag {
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #0369a1;
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-      white-space: nowrap;
+    .trust-check {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--good-bg);
+      border: 1.5px solid var(--good-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
     }
 
-    .preview-grid {
-      display: grid;
-      grid-template-columns: 0.82fr 1.18fr;
-      gap: 18px;
-      margin-top: 18px;
-      align-items: start;
+    .trust-check svg {
+      width: 9px;
+      height: 9px;
+      stroke: var(--good);
+      stroke-width: 2.5;
+      fill: none;
     }
 
-    .listing-placeholder {
+    .stat-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 32px;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 16px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .pill-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: rgba(0, 99, 251, 0.07);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .pill-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted-2);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .pill-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 1px;
+      letter-spacing: -0.02em;
+    }
+
+    /* ── PREVIEW CARD ── */
+    .preview-wrap {
+      position: relative;
+      z-index: 1;
+    }
+
+    .preview-wrap::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      right: -60px;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(6, 190, 251, 0.14) 0%, transparent 65%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .preview-card {
+      position: relative;
+      z-index: 1;
       background: white;
       border: 1px solid var(--line);
       border-radius: 24px;
-      padding: 16px;
-      min-height: 360px;
+      padding: 20px;
+      box-shadow: var(--shadow-lg);
     }
 
-    .listing-shot {
-      height: 100%;
-      min-height: 328px;
-      border-radius: 20px;
-      padding: 16px;
-      background: linear-gradient(135deg, #e2e8f0, #f8fafc 42%, #dbeafe);
+    .preview-topbar {
       display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 14px;
     }
 
-    .listing-shot-top {
+    .preview-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+    }
+
+    .preview-bar {
+      flex: 1;
+      height: 28px;
+      background: var(--bg);
+      border-radius: 7px;
+      border: 1px solid var(--line);
       display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--muted);
+      align-items: center;
+      padding: 0 12px;
+      gap: 6px;
+      margin-left: 6px;
     }
 
-    .listing-shot-cards {
+    .preview-url {
+      font-size: 11px;
+      color: var(--muted-2);
+      font-weight: 500;
+    }
+
+    .preview-url strong { color: var(--finn-core); font-weight: 600; }
+
+    .finn-listing {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .finn-listing-inner {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      grid-template-columns: 100px 1fr;
+      gap: 14px;
+      align-items: start;
     }
 
-    .listing-shot-cards div {
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(255,255,255,0.84);
-      border: 1px solid rgba(255,255,255,0.75);
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
+    .finn-img {
+      width: 100px;
+      height: 70px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #dce8ff, #c5d8f8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .finn-title {
+      font-size: 15px;
       font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
     }
 
-    .extension-card {
-      background: linear-gradient(135deg, #eef8ff, #ffffff 46%, #eff6ff);
-      border: 1px solid #cfe9fb;
-      border-radius: 26px;
-      padding: 14px;
-      box-shadow: 0 20px 60px rgba(14, 30, 58, 0.14);
+    .finn-meta {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 5px;
+      line-height: 1.6;
     }
 
-    .extension-inner {
-      background: rgba(255,255,255,0.94);
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,0.85);
+    .finn-price {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      margin-top: 8px;
+    }
+
+    .ext-overlay {
+      margin-top: 14px;
+      background: white;
+      border: 1.5px solid rgba(0, 99, 251, 0.2);
+      border-radius: 18px;
       overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0, 99, 251, 0.12);
     }
 
-    .extension-head {
-      padding: 18px 20px 16px;
+    .ext-header {
+      background: linear-gradient(135deg, #0047c8, #0063fb 60%, #06befb);
+      padding: 12px 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      border-bottom: 1px solid #e8eff6;
     }
 
-    .extension-title {
-      font-size: 24px;
+    .ext-header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ext-logo-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
       font-weight: 900;
-      font-style: italic;
+      color: white;
+      letter-spacing: -0.05em;
+    }
+
+    .ext-name {
+      font-size: 15px;
+      font-weight: 800;
+      color: white;
       letter-spacing: -0.03em;
     }
 
-    .extension-sub {
-      margin-top: 4px;
+    .ext-sub {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.65);
+      font-weight: 500;
+      margin-top: 1px;
+    }
+
+    .ext-badge {
+      padding: 4px 10px;
+      border-radius: 7px;
       font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.20em;
-      color: var(--muted-2);
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.16);
+      border: 1px solid rgba(255, 255, 255, 0.24);
     }
 
-    .extension-head-tag {
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #0369a1;
-      background: #f0f9ff;
-      border: 1px solid #bae6fd;
-    }
+    .ext-body { padding: 14px 16px 16px; }
 
-    .extension-body { padding: 18px 20px 20px; }
-
-    .top-stats {
+    .ext-top-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
     }
 
-    .mini-box {
-      border-radius: 18px;
-      padding: 14px;
-      border: 1px solid var(--line);
-      background: rgba(248,250,252,0.8);
-    }
-
-    .mini-box.good {
-      border-color: #bbf7d0;
+    .score-box {
       background: var(--good-bg);
+      border: 1px solid var(--good-border);
+      border-radius: 14px;
+      padding: 14px;
     }
 
-    .mini-box .label {
-      font-size: 11px;
-      font-weight: 800;
+    .score-label {
+      font-size: 10px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.18em;
-      color: var(--muted-2);
+      letter-spacing: 0.12em;
+      color: var(--good);
+      opacity: 0.8;
     }
 
-    .mini-box.good .label { color: var(--good); }
-
-    .mini-box .value {
-      margin-top: 6px;
-      font-size: 28px;
-      line-height: 1.05;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .mini-box.good .value { color: var(--good); }
-
-    .analysis {
-      margin-top: 14px;
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 22px;
-      padding: 16px;
-      box-shadow: 0 8px 22px rgba(15,23,42,0.04);
-    }
-
-    .analysis-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      padding-bottom: 14px;
-      border-bottom: 1px solid #e8eff6;
-    }
-
-    .mini-label {
-      font-size: 11px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.20em;
-      color: var(--muted-2);
-    }
-
-    .deal-status {
-      margin-top: 6px;
-      font-size: 32px;
-      line-height: 1.03;
-      font-weight: 800;
+    .score-value {
+      font-size: 22px;
+      font-weight: 900;
       letter-spacing: -0.04em;
       color: var(--good);
+      margin-top: 4px;
+      line-height: 1;
     }
 
-    .deal-pill {
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      color: var(--good);
-      background: var(--good-bg);
-      border: 1px solid #bbf7d0;
-      white-space: nowrap;
+    .score-pct {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 6px;
+      padding: 3px 8px;
+      background: var(--good);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
     }
 
     .market-box {
-      margin-top: 14px;
-      border-radius: 18px;
-      border: 1px solid #dbeafe;
-      background: #f0f9ff;
+      background: rgba(0, 99, 251, 0.05);
+      border: 1px solid rgba(0, 99, 251, 0.14);
+      border-radius: 14px;
       padding: 14px;
     }
 
-    .market-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+    .market-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--finn-core);
+      opacity: 0.75;
+    }
+
+    .market-value {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--finn-core);
+      margin-top: 4px;
+      line-height: 1;
     }
 
     .confidence-pill {
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 800;
-      color: #0369a1;
-      background: white;
-      border: 1px solid #bae6fd;
-      white-space: nowrap;
-    }
-
-    .rows { margin-top: 10px; }
-
-    .row {
-      display: flex;
-      justify-content: space-between;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid #e8eff6;
-    }
-
-    .row:last-child { border-bottom: 0; }
-
-    .row .left {
-      color: var(--muted-2);
+      margin-top: 6px;
+      padding: 3px 8px;
+      background: rgba(0, 99, 251, 0.12);
+      color: var(--finn-core);
       font-size: 11px;
-      font-weight: 800;
+      font-weight: 700;
+      border-radius: 6px;
+    }
+
+    .data-rows {
+      margin-top: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .data-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .data-row:last-child { border-bottom: 0; }
+
+    .data-row-key {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted-2);
       text-transform: uppercase;
-      letter-spacing: 0.20em;
+      letter-spacing: 0.08em;
     }
 
-    .row .right {
-      font-size: 15px;
-      font-weight: 800;
-      text-align: right;
+    .data-row-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
     }
 
-    .good { color: var(--good); }
-    .warn { color: var(--warn); }
+    .data-row-val.good { color: var(--good); }
+    .data-row-val.warn { color: var(--warn); }
 
+    /* ── SECTIONS ── */
     .section {
       max-width: var(--max);
       margin: 0 auto;
-      padding: 88px 16px;
+      padding: 100px 24px;
+      position: relative;
+      z-index: 1;
     }
 
     .section-head {
-      max-width: 780px;
-      margin: 0 auto 44px;
+      max-width: 680px;
+      margin: 0 auto 52px;
       text-align: center;
     }
 
     .section-head h2 {
       margin: 18px 0 0;
-      font-size: clamp(34px, 5vw, 56px);
-      line-height: 1.03;
-      letter-spacing: -0.045em;
+      font-size: clamp(32px, 5vw, 52px);
+      line-height: 1.02;
+      letter-spacing: -0.05em;
+      font-weight: 900;
+    }
+
+    .section-head h2 .accent {
+      background: linear-gradient(135deg, var(--finn-core), var(--finn-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .section-head p {
       margin: 18px 0 0;
-      font-size: 19px;
-      line-height: 1.75;
+      font-size: 18px;
+      line-height: 1.82;
       color: var(--muted);
     }
 
-    .cards {
+    .divider {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .divider hr { border: 0; border-top: 1px solid var(--line); }
+
+    /* ── FEATURE CARDS ── */
+    .feature-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-      margin-top: 40px;
+      gap: 18px;
     }
 
-    .card {
-      background: rgba(255,255,255,0.92);
+    .feature-card {
+      background: white;
       border: 1px solid var(--line);
-      border-radius: 26px;
-      padding: 26px;
-      box-shadow: 0 14px 40px rgba(15,23,42,0.05);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .card-icon {
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--finn-core), var(--finn-blue));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+
+    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+    .feature-card:hover::before { transform: scaleX(1); }
+
+    .card-icon-wrap {
       width: 48px;
       height: 48px;
+      border-radius: 14px;
+      background: rgba(0, 99, 251, 0.07);
+      border: 1px solid rgba(0, 99, 251, 0.12);
       display: grid;
       place-items: center;
-      border-radius: 18px;
-      background: var(--sky-soft);
-      border: 1px solid #cfe9fb;
-      color: #0369a1;
-      font-size: 20px;
-      margin-bottom: 18px;
+      font-size: 21px;
+      margin-bottom: 20px;
     }
 
-    .card h3 {
-      margin: 0;
-      font-size: 24px;
+    .feature-card h3 {
+      font-size: 18px;
+      font-weight: 800;
       letter-spacing: -0.03em;
     }
 
-    .card p {
-      margin: 12px 0 0;
+    .feature-card p {
+      margin: 11px 0 0;
       color: var(--muted);
       line-height: 1.8;
-      font-size: 15px;
+      font-size: 14px;
     }
 
+    /* ── STEP CARDS ── */
+    .step-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .step-card {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+    }
+
+    .step-grid .step-card:not(:last-child)::after {
+      content: '→';
+      position: absolute;
+      right: -18px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--muted-2);
+      z-index: 2;
+    }
+
+    .step-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--finn-deep), var(--finn-blue));
+      color: white;
+      font-size: 18px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 14px rgba(0, 99, 251, 0.28);
+    }
+
+    .step-card h3 {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .step-card p {
+      margin: 11px 0 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 14px;
+    }
+
+    /* ── CTA ── */
+    .cta-section {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 24px 100px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-inner {
+      background: linear-gradient(135deg, var(--finn-navy) 0%, #0047c8 55%, var(--finn-blue) 130%);
+      border-radius: 28px;
+      padding: 70px 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 48px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-inner::before {
+      content: '';
+      position: absolute;
+      top: -80px;
+      right: -80px;
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+    }
+
+    .cta-inner::after {
+      content: '';
+      position: absolute;
+      bottom: -100px;
+      left: 30%;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(6, 190, 251, 0.12);
+      pointer-events: none;
+    }
+
+    .cta-text { position: relative; z-index: 1; }
+
+    .cta-text h2 {
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1.04;
+      color: white;
+    }
+
+    .cta-text p {
+      margin-top: 14px;
+      color: rgba(255, 255, 255, 0.65);
+      font-size: 16px;
+      line-height: 1.75;
+      max-width: 440px;
+    }
+
+    .btn-cta-white {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      color: var(--finn-core);
+      min-height: 56px;
+      padding: 0 34px;
+      font-size: 15px;
+      font-weight: 800;
+      font-family: 'Inter', sans-serif;
+      border-radius: 14px;
+      border: none;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-cta-white:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.26);
+    }
+
+    /* ── FOOTER ── */
     footer {
       border-top: 1px solid var(--line);
-      padding: 28px 16px;
+      padding: 28px 24px;
       text-align: center;
-      color: var(--muted);
-      background: rgba(255,255,255,0.8);
+      color: var(--muted-2);
+      font-size: 13px;
+      font-weight: 500;
+      background: rgba(240, 246, 255, 0.85);
+      position: relative;
+      z-index: 1;
     }
 
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-left > * {
+      animation: fadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+    }
+    .hero-left > *:nth-child(1) { animation-delay: 0.05s; }
+    .hero-left > *:nth-child(2) { animation-delay: 0.12s; }
+    .hero-left > *:nth-child(3) { animation-delay: 0.19s; }
+    .hero-left > *:nth-child(4) { animation-delay: 0.24s; }
+    .hero-left > *:nth-child(5) { animation-delay: 0.30s; }
+    .hero-left > *:nth-child(6) { animation-delay: 0.36s; }
+
+    .preview-wrap { animation: fadeUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+
+    /* ── RESPONSIVE ── */
     @media (max-width: 1040px) {
       nav { display: none; }
-      .hero, .preview-grid, .cards { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
+      .hero { grid-template-columns: 1fr; gap: 44px; }
+      .feature-grid, .step-grid { grid-template-columns: repeat(2, 1fr); }
+      .step-grid .step-card:not(:last-child)::after { display: none; }
+      .cta-inner { flex-direction: column; align-items: flex-start; padding: 44px 36px; }
     }
 
-    @media (max-width: 760px) {
-      .header-inner {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .header-actions {
-        width: 100%;
-      }
-
-      .hero {
-        padding-top: 42px;
-        padding-bottom: 70px;
-      }
-
-      h1 { font-size: 44px; }
-      .buttons, .header-actions { flex-direction: column; width: 100%; }
-      .btn { width: 100%; }
-      .stats, .top-stats, .cards { grid-template-columns: 1fr; }
-      .listing-top, .extension-head, .analysis-top, .market-row { flex-direction: column; align-items: flex-start; }
+    @media (max-width: 680px) {
+      .header-inner { flex-direction: column; align-items: flex-start; }
+      .header-actions { width: 100%; flex-direction: column; }
+      .btn { width: 100%; justify-content: center; }
+      .hero { padding: 52px 0 68px; }
+      h1 { font-size: 42px; }
+      .hero-buttons { flex-direction: column; }
+      .feature-grid, .step-grid { grid-template-columns: 1fr; }
+      .ext-top-grid { grid-template-columns: 1fr; }
+      .finn-listing-inner { grid-template-columns: 1fr; }
+      .finn-img { width: 100%; height: 90px; }
+      .cta-inner { padding: 36px 24px; }
+      .stat-pills { flex-direction: column; }
     }
   </style>
 </head>
 <body>
+
   <header>
     <div class="container header-inner">
       <a href="#top" class="brand">
-        <div class="logo">OversiktPro</div>
-        <div class="brand-sub">Prisanalyse &amp; Markedsinnsikt for Finn.no</div>
+        <div class="brand-mark">OP</div>
+        <div>
+          <div class="logo">OversiktPro</div>
+          <div class="brand-sub">Prisanalyse for Finn.no</div>
+        </div>
       </a>
 
       <nav>
@@ -639,138 +962,152 @@
       </nav>
 
       <div class="header-actions">
-        <a href="#funksjoner" class="btn btn-secondary">Se funksjoner</a>
-        <a href="#" class="btn btn-primary">Legg til i Chrome</a>
+        <a href="#funksjoner" class="btn btn-ghost">Se funksjoner</a>
+        <a href="#" class="btn btn-primary">
+          <span class="chrome-icon"></span>
+          Legg til i Chrome
+        </a>
       </div>
     </div>
   </header>
 
   <main id="top">
+
     <section class="hero">
-      <div>
-        <div class="eyebrow">Prisanalyse &amp; Markedsinnsikt for Finn.no</div>
-        <h1>Se den virkelige verdien bak hver FINN-bilannonse.</h1>
+      <div class="hero-left">
+        <div class="eyebrow">
+          <span class="eyebrow-dot"></span>
+          Chrome-utvidelse for FINN.no
+        </div>
+
+        <h1>Se den <span class="accent">virkelige verdien</span> bak FINN-annonsen.</h1>
+
         <p class="lead">
-          OversiktPro er en Chrome-utvidelse for FINN.no som viser markedsverdi, deal score, sikkerhet, prisendringer og markedsinnsikt direkte på bruktbilannonser — slik at du raskere kan vurdere om bilen virker overpriset, fair priset eller som et sterkt kjøp.
+          OversiktPro viser markedsverdi, deal score, sikkerhet og prishistorikk direkte på bruktbilannonser — slik at du raskere kan vurdere om det er en god deal eller ikke.
         </p>
 
-        <div class="buttons">
-          <a href="#" class="btn btn-primary">Legg til i Chrome</a>
-          <a href="#funksjoner" class="btn btn-secondary">Se funksjoner</a>
+        <div class="hero-buttons">
+          <a href="#" class="btn btn-primary btn-lg">
+            <span class="chrome-icon"></span>
+            Legg til i Chrome — gratis
+          </a>
+          <a href="#funksjoner" class="btn btn-ghost btn-lg">Se alle funksjoner</a>
         </div>
 
-        <div class="stats">
-          <div class="stat">
-            <div class="label">Markedsverdi</div>
-            <div class="value">Øyeblikkelig estimat</div>
+        <div class="trust-row">
+          <div class="trust-item">
+            <div class="trust-check">
+              <svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1"/></svg>
+            </div>
+            Seriøs bruktbilvurdering
           </div>
-          <div class="stat">
-            <div class="label">Deal score</div>
-            <div class="value">God deal, nøytral eller overpriset</div>
+          <div class="trust-item">
+            <div class="trust-check">
+              <svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1"/></svg>
+            </div>
+            Støtter — erstatter ikke — vurderingen din
           </div>
-          <div class="stat">
-            <div class="label">Sikkerhet</div>
-            <div class="value">Tydelig og transparent vurdering</div>
+          <div class="trust-item">
+            <div class="trust-check">
+              <svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1"/></svg>
+            </div>
+            Ingen registrering nødvendig
           </div>
         </div>
 
-        <div class="hero-points">
-          <span><i class="dot dot-good"></i> Bygget for seriøse bruktbilvurderinger</span>
-          <span><i class="dot dot-sky"></i> Støtter vurderingen din, erstatter den ikke</span>
+        <div class="stat-pills">
+          <div class="pill">
+            <div class="pill-icon">📊</div>
+            <div>
+              <div class="pill-label">Markedsverdi</div>
+              <div class="pill-value">Øyeblikkelig estimat</div>
+            </div>
+          </div>
+          <div class="pill">
+            <div class="pill-icon">🎯</div>
+            <div>
+              <div class="pill-label">Deal score</div>
+              <div class="pill-value">God, nøytral eller dyr</div>
+            </div>
+          </div>
+          <div class="pill">
+            <div class="pill-icon">🛡️</div>
+            <div>
+              <div class="pill-label">Sikkerhet</div>
+              <div class="pill-value">Tydelig vurdering</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="preview">
-        <div class="preview-inner">
-          <div class="listing">
-            <div class="listing-top">
-              <div>
-                <h3>BMW 320d xDrive · 2019 · 124 000 km</h3>
-                <p>269 000 kr · Forhandler · FINN.no</p>
-              </div>
-              <div class="listing-tag">Live analyse</div>
+      <div class="preview-wrap">
+        <div class="preview-card">
+          <div class="preview-topbar">
+            <div class="preview-dot" style="background:#ff5f57;"></div>
+            <div class="preview-dot" style="background:#febc2e;"></div>
+            <div class="preview-dot" style="background:#28c840;"></div>
+            <div class="preview-bar">
+              <span class="preview-url"><strong>finn.no</strong>/bap/forsale/ad.html?finnkode=382...</span>
             </div>
           </div>
 
-          <div class="preview-grid">
-            <div class="listing-placeholder">
-              <div class="listing-shot">
-                <div class="listing-shot-top">
-                  <span>FINN-annonse</span>
-                  <span>Bruktbil</span>
-                </div>
-                <div class="listing-shot-cards">
-                  <div>2019</div>
-                  <div>124k km</div>
-                  <div>269k kr</div>
-                </div>
+          <div class="finn-listing">
+            <div class="finn-listing-inner">
+              <div class="finn-img">🚗</div>
+              <div>
+                <div class="finn-title">BMW 320d xDrive · 2019</div>
+                <div class="finn-meta">124 000 km · Automat · Diesel<br>Oslo · Forhandler</div>
+                <div class="finn-price">269 000 kr</div>
               </div>
             </div>
+          </div>
 
-            <div class="extension-card">
-              <div class="extension-inner">
-                <div class="extension-head">
-                  <div>
-                    <div class="extension-title">OversiktPro</div>
-                    <div class="extension-sub">Prisanalyse &amp; Markedsinnsikt for Finn.no</div>
-                  </div>
-                  <div class="extension-head-tag">FINN.no</div>
+          <div class="ext-overlay">
+            <div class="ext-header">
+              <div class="ext-header-left">
+                <div class="ext-logo-mark">OP</div>
+                <div>
+                  <div class="ext-name">OversiktPro</div>
+                  <div class="ext-sub">Prisanalyse &amp; Markedsinnsikt</div>
                 </div>
+              </div>
+              <div class="ext-badge">FINN.no</div>
+            </div>
 
-                <div class="extension-body">
-                  <div class="top-stats">
-                    <div class="mini-box">
-                      <div class="label">Pris</div>
-                      <div class="value">269 000 kr</div>
-                    </div>
-                    <div class="mini-box good">
-                      <div class="label">Potensiell fortjeneste</div>
-                      <div class="value">+31 000 kr</div>
-                    </div>
-                  </div>
+            <div class="ext-body">
+              <div class="ext-top-grid">
+                <div class="score-box">
+                  <div class="score-label">Deal score</div>
+                  <div class="score-value">Sterkt kjøp</div>
+                  <div class="score-pct">+11,5 %</div>
+                </div>
+                <div class="market-box">
+                  <div class="market-label">Markedsverdi</div>
+                  <div class="market-value">300 000 kr</div>
+                  <div class="confidence-pill">Sikkerhet: Høy</div>
+                </div>
+              </div>
 
-                  <div class="analysis">
-                    <div class="analysis-top">
-                      <div>
-                        <div class="mini-label">Deal score</div>
-                        <div class="deal-status">Sterkt kjøp</div>
-                      </div>
-                      <div class="deal-pill">+11,5%</div>
-                    </div>
-
-                    <div class="market-box">
-                      <div class="market-row">
-                        <div>
-                          <div class="mini-label">Estimert markedsverdi</div>
-                          <div class="value" style="margin-top:6px;font-size:32px;font-weight:800;letter-spacing:-0.04em;">300 000 kr</div>
-                        </div>
-                        <div class="confidence-pill">Sikkerhet: Høy</div>
-                      </div>
-                    </div>
-
-                    <div class="rows">
-                      <div class="row">
-                        <div class="left">Dager på markedet</div>
-                        <div class="right">9 dager</div>
-                      </div>
-                      <div class="row">
-                        <div class="left">Prisreduksjon</div>
-                        <div class="right good">-10 000 kr</div>
-                      </div>
-                      <div class="row">
-                        <div class="left">Annonsestatus</div>
-                        <div class="right good">Ny denne uken</div>
-                      </div>
-                      <div class="row">
-                        <div class="left">Selgertype</div>
-                        <div class="right">Forhandler</div>
-                      </div>
-                      <div class="row">
-                        <div class="left">Prishistorikk</div>
-                        <div class="right warn">2 endringer registrert</div>
-                      </div>
-                    </div>
-                  </div>
+              <div class="data-rows">
+                <div class="data-row">
+                  <span class="data-row-key">Potensiell fortjeneste</span>
+                  <span class="data-row-val good">+31 000 kr</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-row-key">Dager på markedet</span>
+                  <span class="data-row-val">9 dager</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-row-key">Prisreduksjon</span>
+                  <span class="data-row-val good">−10 000 kr</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-row-key">Annonsestatus</span>
+                  <span class="data-row-val good">Ny denne uken</span>
+                </div>
+                <div class="data-row">
+                  <span class="data-row-key">Prishistorikk</span>
+                  <span class="data-row-val warn">2 endringer registrert</span>
                 </div>
               </div>
             </div>
@@ -779,88 +1116,95 @@
       </div>
     </section>
 
+    <div class="divider"><hr /></div>
+
     <section class="section" id="funksjoner">
       <div class="section-head">
-        <div class="eyebrow">Kjernefunksjoner</div>
-        <h2>Bygget for seriøse bruktbilkjøpere og raskere vurderinger.</h2>
-        <p>
-          OversiktPro gjør en vanlig FINN-annonse om til et tydeligere markedsbilde med prisvurdering, deal score, sikkerhet og relevant historikk samlet på ett sted.
-        </p>
+        <div class="eyebrow"><span class="eyebrow-dot"></span> Kjernefunksjoner</div>
+        <h2>Alt du trenger for <span class="accent">smarte kjøp.</span></h2>
+        <p>OversiktPro gjør en vanlig FINN-annonse om til et tydeligere markedsbilde med prisvurdering, deal score, sikkerhet og relevant historikk samlet på ett sted.</p>
       </div>
 
-      <div class="cards">
-        <div class="card">
-          <div class="card-icon">📄</div>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="card-icon-wrap">📄</div>
           <h3>Live analyse av annonsen</h3>
-          <p>Les merke, modell, årsmodell, kilometerstand, pris, selgertype og annen nøkkelinformasjon direkte fra FINN-annonsen.</p>
+          <p>Les merke, modell, årsmodell, kilometerstand, pris, selgertype og nøkkelinformasjon direkte fra FINN-annonsen automatisk.</p>
         </div>
-
-        <div class="card">
-          <div class="card-icon">🎯</div>
+        <div class="feature-card">
+          <div class="card-icon-wrap">🎯</div>
           <h3>Deal score med kontekst</h3>
           <p>Forstå umiddelbart om bilen virker overpriset, fair priset eller som et mulig godt kjøp sammenlignet med markedet.</p>
         </div>
-
-        <div class="card">
-          <div class="card-icon">📊</div>
+        <div class="feature-card">
+          <div class="card-icon-wrap">📊</div>
           <h3>Estimert markedsverdi</h3>
-          <p>Se estimert markedsverdi og mulig fortjeneste, slik at undervurderte annonser blir enklere å oppdage.</p>
+          <p>Se estimert markedsverdi og mulig fortjeneste, slik at undervurderte annonser blir enklere å oppdage raskt.</p>
         </div>
-
-        <div class="card">
-          <div class="card-icon">🛡️</div>
-          <h3>Tydelig sikkerhet</h3>
-          <p>OversiktPro viser hvor sterk analysen er, slik at du vet når datagrunnlaget virker solid og når du bør være mer forsiktig.</p>
+        <div class="feature-card">
+          <div class="card-icon-wrap">🛡️</div>
+          <h3>Tydelig sikkerhetsnivå</h3>
+          <p>OversiktPro viser hvor sterk analysen er, slik at du vet når datagrunnlaget virker solid og når du bør være forsiktig.</p>
         </div>
-
-        <div class="card">
-          <div class="card-icon">⏱️</div>
+        <div class="feature-card">
+          <div class="card-icon-wrap">⏱️</div>
           <h3>Pris- og markedshistorikk</h3>
-          <p>Se hvor lenge bilen har ligget ute, om prisen er redusert, om annonsen er ny og hvordan listingens historikk har utviklet seg.</p>
+          <p>Se hvor lenge bilen har ligget ute, om prisen er redusert, om annonsen er ny og hvordan historikken har utviklet seg.</p>
         </div>
-
-        <div class="card" id="oppdag">
-          <div class="card-icon">✨</div>
+        <div class="feature-card" id="oppdag">
+          <div class="card-icon-wrap">✨</div>
           <h3>Oppdag nye deals</h3>
           <p>Finn interessante biler tidlig gjennom kontinuerlig overvåkning av FINN-markedet, og verifiser dem i den live analysen.</p>
         </div>
       </div>
     </section>
 
+    <div class="divider"><hr /></div>
+
     <section class="section" id="hvordan">
       <div class="section-head">
-        <div class="eyebrow">Hvordan det fungerer</div>
-        <h2>Få tydeligere innsikt på få sekunder.</h2>
-        <p>
-          OversiktPro passer rett inn i arbeidsflyten på FINN.no. Du åpner annonsen som vanlig, og får umiddelbart en strukturert vurdering av prisnivå, markedsverdi og historikk.
-        </p>
+        <div class="eyebrow"><span class="eyebrow-dot"></span> Hvordan det fungerer</div>
+        <h2>Innsikt på <span class="accent">tre sekunder.</span></h2>
+        <p>OversiktPro passer rett inn i arbeidsflyten på FINN.no. Du åpner annonsen som vanlig og får umiddelbart en strukturert vurdering.</p>
       </div>
 
-      <div class="cards">
-        <div class="card">
-          <div class="card-icon">1</div>
+      <div class="step-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
           <h3>Åpne en bilannonse på FINN.no</h3>
           <p>Bruk FINN slik du allerede gjør i dag, uten ekstra steg eller manuell sammenligning i flere faner.</p>
         </div>
-
-        <div class="card">
-          <div class="card-icon">2</div>
+        <div class="step-card">
+          <div class="step-num">2</div>
           <h3>OversiktPro leser annonsen</h3>
-          <p>Utvidelsen henter ut viktige signaler som merke, modell, årsmodell, kilometerstand, pris og selgertype.</p>
+          <p>Utvidelsen henter ut viktige signaler som merke, modell, årsmodell, kilometerstand, pris og selgertype automatisk.</p>
         </div>
-
-        <div class="card">
-          <div class="card-icon">3</div>
+        <div class="step-card">
+          <div class="step-num">3</div>
           <h3>Markedet analyseres i bakgrunnen</h3>
           <p>Systemet estimerer markedsverdi, deal score, sikkerhet, potensiell fortjeneste og relevant markedshistorikk.</p>
         </div>
       </div>
     </section>
+
+    <div class="cta-section">
+      <div class="cta-inner">
+        <div class="cta-text">
+          <h2>Klar til å finne din neste gode deal?</h2>
+          <p>Legg til OversiktPro i Chrome og få umiddelbar markedsinnsikt på alle FINN-bilannonser du besøker — helt gratis.</p>
+        </div>
+        <a href="#" class="btn-cta-white">
+          <span class="chrome-icon"></span>
+          Legg til i Chrome — gratis
+        </a>
+      </div>
+    </div>
+
   </main>
 
   <footer>
-    OversiktPro · Prisanalyse &amp; Markedsinnsikt for Finn.no
+    <strong style="color: var(--muted); font-weight: 700;">OversiktPro</strong> · Prisanalyse &amp; Markedsinnsikt for Finn.no
   </footer>
+
 </body>
 </html>
-```
