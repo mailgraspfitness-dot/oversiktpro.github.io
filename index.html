@@ -1,644 +1,605 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OversiktPro — Keep Your Browser Organized</title>
-  <meta name="description" content="OversiktPro helps you stay organized in Chrome with a cleaner, faster overview of what matters." />
-  <meta property="og:title" content="OversiktPro — Keep Your Browser Organized" />
-  <meta property="og:description" content="A smarter Chrome extension for getting a clear overview and staying focused." />
-  <meta property="og:type" content="website" />
-  <meta name="theme-color" content="#0f172a" />
-  <style>
-    :root {
-      --bg: #07111f;
-      --bg-soft: #0f172a;
-      --card: rgba(255,255,255,0.06);
-      --border: rgba(255,255,255,0.12);
-      --text: #e5eefc;
-      --muted: #9db0cf;
-      --accent: #4f8cff;
-      --accent-2: #7dd3fc;
-      --success: #22c55e;
-      --shadow: 0 20px 60px rgba(0,0,0,0.35);
-      --radius: 22px;
-      --max: 1160px;
-    }
+import React from "react";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  BadgeCheck,
+  BarChart3,
+  Car,
+  ChevronRight,
+  CircleHelp,
+  Clock3,
+  LineChart,
+  Radar,
+  ScanSearch,
+  Search,
+  ShieldCheck,
+  Sparkles,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(79,140,255,0.20), transparent 35%),
-        radial-gradient(circle at 80% 20%, rgba(125,211,252,0.14), transparent 25%),
-        linear-gradient(180deg, #07111f 0%, #0a1220 60%, #0f172a 100%);
-      color: var(--text);
-      line-height: 1.6;
-    }
+const fadeUp = {
+  initial: { opacity: 0, y: 24 },
+  whileInView: { opacity: 1, y: 0 },
+  viewport: { once: true, amount: 0.2 },
+  transition: { duration: 0.55, ease: "easeOut" },
+};
 
-    a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; display: block; }
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  <div className="mb-4 inline-flex items-center rounded-full border border-sky-200 bg-white/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-500 shadow-sm backdrop-blur">
+    {children}
+  </div>
+);
 
-    .container {
-      width: min(100% - 32px, var(--max));
-      margin: 0 auto;
-    }
+const StatPill = ({ label, value }: { label: string; value: string }) => (
+  <div className="rounded-2xl border border-slate-200/70 bg-white/85 px-4 py-3 shadow-sm backdrop-blur">
+    <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">{label}</div>
+    <div className="mt-1 text-lg font-semibold text-slate-900">{value}</div>
+  </div>
+);
 
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(14px);
-      background: rgba(7,17,31,0.75);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .nav-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 0;
-      gap: 20px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      letter-spacing: 0.2px;
-    }
-
-    .logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      color: white;
-      box-shadow: var(--shadow);
-      font-size: 18px;
-      font-weight: 800;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      min-height: 48px;
-      padding: 0 20px;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      font-weight: 600;
-      transition: 0.2s ease;
-      cursor: pointer;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), #2563eb);
-      color: white;
-      box-shadow: 0 12px 30px rgba(37,99,235,0.35);
-    }
-
-    .btn-primary:hover { transform: translateY(-1px); }
-
-    .btn-secondary {
-      background: rgba(255,255,255,0.05);
-      border-color: rgba(255,255,255,0.12);
-      color: var(--text);
-    }
-
-    .hero {
-      padding: 80px 0 40px;
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.1fr 0.9fr;
-      gap: 40px;
-      align-items: center;
-    }
-
-    .pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 14px;
-      border: 1px solid rgba(125,211,252,0.25);
-      background: rgba(125,211,252,0.08);
-      border-radius: 999px;
-      color: #c9f2ff;
-      font-size: 14px;
-      margin-bottom: 18px;
-    }
-
-    h1 {
-      font-size: clamp(40px, 6vw, 68px);
-      line-height: 1.02;
-      margin: 0 0 18px;
-      letter-spacing: -0.04em;
-    }
-
-    .lead {
-      font-size: clamp(18px, 2vw, 21px);
-      color: var(--muted);
-      max-width: 620px;
-      margin: 0 0 28px;
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      margin-bottom: 22px;
-    }
-
-    .mini-note {
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      margin-top: 32px;
-    }
-
-    .stat {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 18px;
-      backdrop-filter: blur(10px);
-    }
-
-    .stat strong {
-      display: block;
-      font-size: 26px;
-      margin-bottom: 4px;
-    }
-
-    .mockup-wrap {
-      position: relative;
-    }
-
-    .glow {
-      position: absolute;
-      inset: auto 10% -10% 10%;
-      height: 120px;
-      filter: blur(60px);
-      background: rgba(79,140,255,0.35);
-      z-index: 0;
-    }
-
-    .mockup {
-      position: relative;
-      z-index: 1;
-      background: linear-gradient(180deg, rgba(255,255,255,0.10), rgba(255,255,255,0.04));
-      border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
-
-    .browser-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 14px 16px;
-      background: rgba(255,255,255,0.06);
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.45);
-    }
-
-    .mockup-body {
-      padding: 22px;
-      display: grid;
-      gap: 16px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.00));
-    }
-
-    .panel, .row-card {
-      background: rgba(8,15,30,0.75);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-    }
-
-    .panel {
-      padding: 16px;
-    }
-
-    .panel-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-
-    .search {
-      height: 42px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.08);
-      display: flex;
-      align-items: center;
-      padding: 0 14px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .grid-two {
-      display: grid;
-      grid-template-columns: 1.15fr 0.85fr;
-      gap: 16px;
-    }
-
-    .row-card {
-      padding: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .row-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .icon-box {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, rgba(79,140,255,0.28), rgba(125,211,252,0.18));
-      display: grid;
-      place-items: center;
-      font-size: 16px;
-    }
-
-    .row-title { font-weight: 600; }
-    .row-sub { color: var(--muted); font-size: 13px; }
-    .badge {
-      font-size: 12px;
-      color: #d8fce7;
-      background: rgba(34,197,94,0.14);
-      border: 1px solid rgba(34,197,94,0.22);
-      padding: 6px 10px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-
-    section {
-      padding: 56px 0;
-    }
-
-    .section-head {
-      text-align: center;
-      max-width: 760px;
-      margin: 0 auto 34px;
-    }
-
-    .section-head h2 {
-      margin: 0 0 10px;
-      font-size: clamp(28px, 4vw, 46px);
-      letter-spacing: -0.03em;
-    }
-
-    .section-head p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 18px;
-    }
-
-    .features {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .feature {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 24px;
-      backdrop-filter: blur(10px);
-    }
-
-    .feature .icon-box {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 16px;
-    }
-
-    .feature h3 {
-      margin: 0 0 8px;
-      font-size: 20px;
-    }
-
-    .feature p {
-      margin: 0;
-      color: var(--muted);
-    }
-
-    .how {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .step {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: var(--radius);
-      padding: 24px;
-    }
-
-    .step-number {
-      width: 38px;
-      height: 38px;
-      border-radius: 999px;
-      display: grid;
-      place-items: center;
-      background: rgba(79,140,255,0.18);
-      border: 1px solid rgba(79,140,255,0.35);
-      margin-bottom: 14px;
-      font-weight: 700;
-    }
-
-    .cta {
-      padding: 24px;
-      background: linear-gradient(135deg, rgba(79,140,255,0.18), rgba(125,211,252,0.08));
-      border: 1px solid rgba(125,211,252,0.16);
-      border-radius: 28px;
-      box-shadow: var(--shadow);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .cta h3 {
-      margin: 0 0 8px;
-      font-size: clamp(26px, 4vw, 36px);
-      letter-spacing: -0.03em;
-    }
-
-    .cta p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 640px;
-    }
-
-    footer {
-      padding: 28px 0 50px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      padding-top: 24px;
-    }
-
-    @media (max-width: 980px) {
-      .hero-grid, .grid-two, .features, .how {
-        grid-template-columns: 1fr;
-      }
-
-      .stats { grid-template-columns: 1fr; }
-      .nav-links a:not(.btn) { display: none; }
-    }
-
-    @media (max-width: 640px) {
-      .hero { padding-top: 56px; }
-      .nav-inner { padding: 12px 0; }
-      .btn { width: 100%; }
-      .hero-actions { flex-direction: column; }
-    }
-  </style>
-</head>
-<body>
-  <nav class="nav">
-    <div class="container nav-inner">
-      <a class="brand" href="#top" aria-label="OversiktPro home">
-        <div class="logo">O</div>
-        <span>OversiktPro</span>
-      </a>
-      <div class="nav-links">
-        <a href="#features">Features</a>
-        <a href="#how-it-works">How it works</a>
-        <a href="#download" class="btn btn-secondary">Chrome Web Store</a>
+const FeatureCard = ({
+  icon,
+  title,
+  text,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  text: string;
+}) => (
+  <Card className="h-full rounded-[28px] border-sky-100 bg-white/88 shadow-[0_20px_60px_rgba(15,23,42,0.07)] backdrop-blur">
+    <CardContent className="p-6 md:p-7">
+      <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-700 shadow-sm">
+        {icon}
       </div>
+      <h3 className="text-xl font-semibold tracking-tight text-slate-900">{title}</h3>
+      <p className="mt-3 text-[15px] leading-7 text-slate-600">{text}</p>
+    </CardContent>
+  </Card>
+);
+
+const InsightRow = ({
+  label,
+  value,
+  tone = "default",
+}: {
+  label: string;
+  value: string;
+  tone?: "default" | "good" | "bad" | "warn";
+}) => {
+  const toneClasses = {
+    default: "text-slate-900",
+    good: "text-emerald-600",
+    bad: "text-rose-600",
+    warn: "text-amber-600",
+  }[tone];
+
+  return (
+    <div className="flex items-center justify-between gap-4 border-b border-slate-200/80 py-3 last:border-b-0">
+      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">{label}</div>
+      <div className={`text-right text-[15px] font-semibold ${toneClasses}`}>{value}</div>
     </div>
-  </nav>
+  );
+};
 
-  <main id="top">
-    <section class="hero">
-      <div class="container hero-grid">
-        <div>
-          <div class="pill">⚡ Built for focus and better browser control</div>
-          <h1>Get a clearer overview of your work with OversiktPro.</h1>
-          <p class="lead">
-            OversiktPro is a Chrome extension designed to help you stay organized, move faster,
-            and keep what matters in view — without the browser chaos.
-          </p>
-          <div class="hero-actions">
-            <a href="#download" class="btn btn-primary">Add to Chrome</a>
-            <a href="#features" class="btn btn-secondary">See features</a>
-          </div>
-          <div class="mini-note">Replace the buttons with your real Chrome Web Store link before publishing.</div>
+const TooltipChip = ({ title, text }: { title: string; text: string }) => (
+  <div className="group relative inline-flex items-center gap-1 text-slate-500">
+    <span>{title}</span>
+    <CircleHelp className="h-3.5 w-3.5" />
+    <div className="pointer-events-none absolute left-0 top-6 z-20 hidden w-72 rounded-2xl border border-slate-200 bg-white p-3 text-xs font-normal normal-case tracking-normal text-slate-600 shadow-xl group-hover:block">
+      {text}
+    </div>
+  </div>
+);
 
-          <div class="stats">
-            <div class="stat">
-              <strong>Less clutter</strong>
-              <span>Keep your workspace easier to scan and manage.</span>
-            </div>
-            <div class="stat">
-              <strong>More focus</strong>
-              <span>Spend less time switching around and more time doing.</span>
-            </div>
-            <div class="stat">
-              <strong>Faster workflow</strong>
-              <span>Bring order to tabs, tasks, or links in one simple flow.</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="mockup-wrap">
-          <div class="glow"></div>
-          <div class="mockup">
-            <div class="browser-bar">
-              <div class="dot"></div>
-              <div class="dot"></div>
-              <div class="dot"></div>
-            </div>
-            <div class="mockup-body">
-              <div class="panel">
-                <div class="panel-top">
-                  <div>
-                    <div class="row-title">Today’s Overview</div>
-                    <div class="row-sub">Everything important, neatly structured</div>
-                  </div>
-                  <div class="badge">Active</div>
-                </div>
-                <div class="search">Search tabs, notes, or saved items…</div>
-                <div class="row-card">
-                  <div class="row-left">
-                    <div class="icon-box">📌</div>
-                    <div>
-                      <div class="row-title">Pinned workspace</div>
-                      <div class="row-sub">Keep priority items visible</div>
-                    </div>
-                  </div>
-                  <span class="badge">Ready</span>
-                </div>
-                <div class="row-card">
-                  <div class="row-left">
-                    <div class="icon-box">🗂️</div>
-                    <div>
-                      <div class="row-title">Grouped content</div>
-                      <div class="row-sub">Organize by project or task</div>
-                    </div>
-                  </div>
-                  <span class="badge">Sorted</span>
-                </div>
-              </div>
-              <div class="grid-two">
-                <div class="panel">
-                  <div class="row-title" style="margin-bottom:10px;">Quick actions</div>
-                  <div class="row-card" style="margin-top:0;">
-                    <div class="row-left">
-                      <div class="icon-box">⚙️</div>
-                      <div>
-                        <div class="row-title">Smart cleanup</div>
-                        <div class="row-sub">Reduce distraction fast</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row-card">
-                    <div class="row-left">
-                      <div class="icon-box">🔎</div>
-                      <div>
-                        <div class="row-title">Instant overview</div>
-                        <div class="row-sub">Find what you need quickly</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="panel">
-                  <div class="row-title" style="margin-bottom:10px;">Progress</div>
-                  <div style="height: 12px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; margin-bottom: 14px;">
-                    <div style="width:72%; height:100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 999px;"></div>
-                  </div>
-                  <div class="row-sub">72% more organized than your usual browser chaos.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="features">
-      <div class="container">
-        <div class="section-head">
-          <h2>Why people choose OversiktPro</h2>
-          <p>A modern Chrome extension landing page focused on clarity, speed, and trust.</p>
-        </div>
-
-        <div class="features">
-          <div class="feature">
-            <div class="icon-box">🧭</div>
-            <h3>Clear overview</h3>
-            <p>See your important browser activity in a more organized and useful layout.</p>
-          </div>
-          <div class="feature">
-            <div class="icon-box">⚡</div>
-            <h3>Move faster</h3>
-            <p>Cut down friction and get to the right tab, task, or item quicker.</p>
-          </div>
-          <div class="feature">
-            <div class="icon-box">🎯</div>
-            <h3>Stay focused</h3>
-            <p>Reduce clutter so you can concentrate on what matters most right now.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="how-it-works">
-      <div class="container">
-        <div class="section-head">
-          <h2>How it works</h2>
-          <p>Simple to install, easy to use, and built to make your browser feel more under control.</p>
-        </div>
-
-        <div class="how">
-          <div class="step">
-            <div class="step-number">1</div>
-            <h3>Install the extension</h3>
-            <p>Add OversiktPro to Chrome and pin it to your toolbar for easy access.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">2</div>
-            <h3>Open your overview</h3>
-            <p>Launch the extension and instantly get a more structured view of your workspace.</p>
-          </div>
-          <div class="step">
-            <div class="step-number">3</div>
-            <h3>Work with less chaos</h3>
-            <p>Use OversiktPro to keep things tidy, visible, and easier to act on throughout the day.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="download">
-      <div class="container">
-        <div class="cta">
+const MockExtensionCard = () => (
+  <div className="relative mx-auto max-w-[420px]">
+    <div className="absolute -inset-8 rounded-[40px] bg-[radial-gradient(circle_at_top,_rgba(125,211,252,0.45),_transparent_55%)] blur-2xl" />
+    <div className="relative rounded-[30px] border border-sky-200/70 bg-gradient-to-br from-sky-50 via-white to-blue-50 p-3 shadow-[0_28px_90px_rgba(14,30,58,0.16)]">
+      <div className="rounded-[24px] border border-white/80 bg-white/90 shadow-[0_18px_60px_rgba(30,41,59,0.10)] backdrop-blur">
+        <div className="flex items-center justify-between border-b border-slate-200/70 px-5 py-4">
           <div>
-            <h3>Ready to try OversiktPro?</h3>
-            <p>Publish this page, add your Chrome Web Store link, and connect your custom domain when you’re ready.</p>
+            <div className="text-xl font-black italic tracking-tight text-slate-900">OversiktPro</div>
+            <div className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.24em] text-slate-400">Live FINN listing analysis</div>
           </div>
-          <a href="#" class="btn btn-primary">Add to Chrome</a>
+          <div className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+            FINN.no
+          </div>
+        </div>
+
+        <div className="px-5 py-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-3">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">Price</div>
+              <div className="mt-1 text-xl font-semibold text-slate-900">269 000 kr</div>
+            </div>
+            <div className="rounded-2xl border border-emerald-200 bg-emerald-50/90 p-3">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-emerald-600">Potential profit</div>
+              <div className="mt-1 text-xl font-semibold text-emerald-700">+31 000 kr</div>
+            </div>
+          </div>
+
+          <div className="mt-4 rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-200 pb-4">
+              <div>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">
+                  Deal score
+                </div>
+                <div className="mt-1 text-2xl font-semibold tracking-tight text-emerald-600">Strong deal</div>
+              </div>
+              <div className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                +11.5%
+              </div>
+            </div>
+
+            <div className="py-3 text-xs font-medium text-slate-500">
+              <TooltipChip
+                title="Confidence"
+                text="High confidence means many comparable listings were found, making the estimate more reliable. Lower confidence means thinner market data and more uncertainty."
+              />
+            </div>
+
+            <div className="rounded-2xl border border-sky-100 bg-sky-50/80 p-3">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-slate-400">
+                    Estimated market value
+                  </div>
+                  <div className="mt-1 text-2xl font-semibold text-slate-900">300 000 kr</div>
+                </div>
+                <div className="rounded-full border border-sky-200 bg-white px-3 py-1 text-xs font-semibold text-sky-700">
+                  Høy
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-3 space-y-0">
+              <InsightRow label="Days on market" value="9 days" />
+              <InsightRow label="Price reduction" value="-10 000 kr" tone="good" />
+              <InsightRow label="Listing freshness" value="New this week" tone="good" />
+              <InsightRow label="Seller type" value="Dealer" />
+              <InsightRow label="Price history" value="2 changes detected" tone="warn" />
+            </div>
+          </div>
         </div>
       </div>
-    </section>
-  </main>
-
-  <footer>
-    <div class="container footer-inner">
-      <div>© 2026 OversiktPro. All rights reserved.</div>
-      <div>Made for a cleaner Chrome workflow.</div>
     </div>
-  </footer>
-</body>
-</html>
+  </div>
+);
+
+const MockListingPanel = () => (
+  <div className="relative overflow-hidden rounded-[34px] border border-slate-200/80 bg-white/88 p-3 shadow-[0_30px_90px_rgba(15,23,42,0.10)] backdrop-blur">
+    <div className="rounded-[28px] border border-slate-200/70 bg-slate-50/80 p-4">
+      <div className="flex items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-slate-700">
+            <Search className="h-4 w-4" />
+          </div>
+          <div>
+            <div className="text-sm font-semibold text-slate-900">FINN.no bruktbilannonse</div>
+            <div className="text-xs text-slate-500">BMW 320d xDrive · 2019 · 124 000 km</div>
+          </div>
+        </div>
+        <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-500">
+          Live page
+        </div>
+      </div>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+        <div className="rounded-[24px] border border-slate-200 bg-white p-4">
+          <div className="aspect-[16/10] rounded-[20px] bg-[linear-gradient(135deg,#e2e8f0,#f8fafc_40%,#dbeafe)] p-4">
+            <div className="flex h-full flex-col justify-between rounded-[18px] border border-white/70 bg-white/50 p-4">
+              <div className="flex items-center justify-between text-xs font-medium text-slate-500">
+                <span>Listing image area</span>
+                <span>FINN.no</span>
+              </div>
+              <div className="grid grid-cols-3 gap-2 text-center text-xs text-slate-500">
+                <div className="rounded-xl bg-white/80 px-3 py-2">2019</div>
+                <div className="rounded-xl bg-white/80 px-3 py-2">124k km</div>
+                <div className="rounded-xl bg-white/80 px-3 py-2">269k kr</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <MockExtensionCard />
+      </div>
+    </div>
+  </div>
+);
+
+const DiscoveryPanel = () => (
+  <Card className="rounded-[30px] border-sky-100 bg-white/90 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur">
+    <CardContent className="p-6 md:p-7">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+        <div>
+          <div className="text-sm font-semibold text-slate-900">New deals discovered</div>
+          <div className="mt-1 text-sm text-slate-500">Continuously surfaced candidate listings from tracked FINN market activity.</div>
+        </div>
+        <div className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-semibold text-sky-700">
+          Live candidate feed
+        </div>
+      </div>
+
+      <div className="mt-5 space-y-3">
+        {[
+          ["Volkswagen ID.4 2022", "Candidate edge", "+24 000 kr", "good"],
+          ["Toyota RAV4 Hybrid 2020", "Price reduced", "+18 000 kr", "good"],
+          ["Audi A4 Avant 2018", "Low confidence", "Review live", "warn"],
+        ].map(([title, tag, value, tone]) => (
+          <div key={title} className="flex items-center justify-between gap-4 rounded-[22px] border border-slate-200 bg-slate-50/80 px-4 py-4">
+            <div>
+              <div className="text-[15px] font-semibold text-slate-900">{title}</div>
+              <div className="mt-1 text-sm text-slate-500">{tag}</div>
+            </div>
+            <div
+              className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                tone === "good"
+                  ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : "border border-amber-200 bg-amber-50 text-amber-700"
+              }`}
+            >
+              {value}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-5 rounded-[22px] border border-dashed border-sky-200 bg-sky-50/60 px-4 py-4 text-sm leading-7 text-slate-600">
+        New deal candidates are designed to help users spot promising outliers early, then verify the opportunity inside the live analysis card before acting.
+      </div>
+    </CardContent>
+  </Card>
+);
+
+export default function OversiktProLandingPage() {
+  return (
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f7fbff_0%,#f8fafc_22%,#ffffff_100%)] text-slate-900">
+      <div className="absolute inset-x-0 top-0 -z-10 h-[620px] bg-[radial-gradient(circle_at_top_left,rgba(125,211,252,0.35),transparent_32%),radial-gradient(circle_at_80%_10%,rgba(59,130,246,0.10),transparent_25%),linear-gradient(180deg,#eff6ff_0%,rgba(255,255,255,0)_100%)]" />
+
+      <header className="sticky top-0 z-40 border-b border-white/60 bg-white/80 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#e0f2fe,#dbeafe_55%,#ffffff)] shadow-sm ring-1 ring-sky-100">
+              <Car className="h-5 w-5 text-slate-900" />
+            </div>
+            <div>
+              <div className="text-lg font-black italic tracking-tight">OversiktPro</div>
+              <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">FINN.no car intelligence</div>
+            </div>
+          </div>
+
+          <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 lg:flex">
+            <a href="#features" className="transition hover:text-slate-900">Features</a>
+            <a href="#how" className="transition hover:text-slate-900">How it works</a>
+            <a href="#discovery" className="transition hover:text-slate-900">Discovery</a>
+            <a href="#trust" className="transition hover:text-slate-900">Why it matters</a>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" className="hidden rounded-full text-slate-600 md:inline-flex">Join waitlist</Button>
+            <Button className="rounded-full bg-slate-900 px-5 text-white hover:bg-slate-800">
+              Add to Chrome
+            </Button>
+          </div>
+        </div>
+      </header>
+
+      <main>
+        <section className="mx-auto max-w-7xl px-6 pb-20 pt-14 lg:px-8 lg:pb-28 lg:pt-20">
+          <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
+            <motion.div {...fadeUp}>
+              <SectionLabel>Used-car intelligence for FINN.no</SectionLabel>
+              <h1 className="max-w-3xl text-5xl font-semibold tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
+                See the real value behind every FINN car listing.
+              </h1>
+              <p className="mt-6 max-w-2xl text-lg leading-8 text-slate-600 sm:text-xl">
+                OversiktPro is a Chrome extension that overlays live valuation, deal score, confidence, and market tracking directly on top of used-car listings on FINN.no — so you can judge a listing faster, with more clarity.
+              </p>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button className="group rounded-full bg-slate-900 px-6 py-6 text-base text-white hover:bg-slate-800">
+                  Add to Chrome
+                  <ArrowRight className="ml-2 h-4 w-4 transition group-hover:translate-x-0.5" />
+                </Button>
+                <Button variant="outline" className="rounded-full border-slate-300 bg-white/80 px-6 py-6 text-base text-slate-700 backdrop-blur hover:bg-slate-50">
+                  See live product preview
+                </Button>
+              </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-3">
+                <StatPill label="Market value" value="Instant estimate" />
+                <StatPill label="Deal score" value="Good / neutral / overpriced" />
+                <StatPill label="Confidence" value="Transparent reliability" />
+              </div>
+
+              <div className="mt-8 flex flex-wrap items-center gap-4 text-sm text-slate-500">
+                <div className="inline-flex items-center gap-2">
+                  <BadgeCheck className="h-4 w-4 text-emerald-600" />
+                  Built for real-world used-car decisions
+                </div>
+                <div className="inline-flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-sky-700" />
+                  Designed to support judgment, not replace it
+                </div>
+              </div>
+            </motion.div>
+
+            <motion.div {...fadeUp} transition={{ duration: 0.65, ease: "easeOut" }}>
+              <MockListingPanel />
+            </motion.div>
+          </div>
+        </section>
+
+        <section id="features" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
+            <SectionLabel>Core product features</SectionLabel>
+            <h2 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">
+              A live valuation assistant built for serious used-car buyers.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              OversiktPro turns a raw listing into a clearer market view, combining live listing data, comparable signals, tracking context, and practical confidence indicators.
+            </p>
+          </motion.div>
+
+          <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            <motion.div {...fadeUp}><FeatureCard icon={<ScanSearch className="h-5 w-5" />} title="Live listing analysis" text="Read key signals directly from the FINN listing, including brand, model, year, mileage, seller type, price, and listing identity." /></motion.div>
+            <motion.div {...fadeUp}><FeatureCard icon={<Radar className="h-5 w-5" />} title="Deal score with context" text="Instantly understand whether a car looks overpriced, fairly priced, or unusually attractive relative to estimated market value." /></motion.div>
+            <motion.div {...fadeUp}><FeatureCard icon={<BarChart3 className="h-5 w-5" />} title="Market value estimation" text="Surface an estimated market value and potential profit so undervalued listings stand out immediately." /></motion.div>
+            <motion.div {...fadeUp}><FeatureCard icon={<ShieldCheck className="h-5 w-5" />} title="Transparent confidence" text="OversiktPro does not just give you a number. It also shows confidence so users understand when the estimate is strong and when caution is needed." /></motion.div>
+            <motion.div {...fadeUp}><FeatureCard icon={<Clock3 className="h-5 w-5" />} title="Price history and tracking" text="See if a listing is new, how long it has been on the market, whether the price was reduced, and how the listing has evolved over time." /></motion.div>
+            <motion.div {...fadeUp}><FeatureCard icon={<Sparkles className="h-5 w-5" />} title="Discovery beyond the listing" text="Track newly discovered deal candidates from a continuously monitored FINN dataset, then verify them with live listing analysis." /></motion.div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-[0.92fr_1.08fr]">
+            <motion.div {...fadeUp} className="rounded-[34px] border border-sky-100 bg-[linear-gradient(180deg,#ffffff,#f8fbff)] p-8 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
+              <SectionLabel>Valuation clarity</SectionLabel>
+              <h2 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                Know whether the asking price actually makes sense.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-slate-600">
+                One of the strongest hooks in OversiktPro is the feeling of instant market orientation. Open a listing and immediately see current asking price, estimated market value, and upside potential in one clear view.
+              </p>
+              <div className="mt-8 space-y-4">
+                {[
+                  "Spot undervalued listings faster",
+                  "Avoid spending time on clearly overpriced ads",
+                  "Compare asking price against live estimated value",
+                  "Understand whether upside looks meaningful or marginal",
+                ].map((item) => (
+                  <div key={item} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-4">
+                    <div className="mt-0.5 rounded-full bg-emerald-50 p-1 text-emerald-600"><BadgeCheck className="h-4 w-4" /></div>
+                    <p className="text-slate-700">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div {...fadeUp} className="grid gap-5 sm:grid-cols-2">
+              <Card className="rounded-[30px] border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Deal score</div>
+                    <TooltipChip title="How to read it" text="Deal score reflects how attractive the asking price appears versus estimated market value. Users should still check service history, replaced parts, accident history, and hidden faults." />
+                  </div>
+                  <div className="mt-4 rounded-[24px] border border-emerald-200 bg-emerald-50/80 p-5">
+                    <div className="inline-flex rounded-full border border-emerald-200 bg-white px-3 py-1 text-xs font-semibold text-emerald-700">Good deal</div>
+                    <div className="mt-4 text-3xl font-semibold tracking-tight text-emerald-700">+11.5%</div>
+                    <p className="mt-2 text-sm leading-7 text-slate-600">Highlights when the listing looks meaningfully below estimated market value.</p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="rounded-[30px] border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Confidence</div>
+                    <TooltipChip title="Why it matters" text="Confidence communicates how solid the estimate looks based on the depth and quality of comparable market data." />
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-center justify-between rounded-2xl border border-sky-200 bg-sky-50/70 px-4 py-3">
+                      <span className="font-medium text-slate-700">Høy</span>
+                      <span className="text-sm text-slate-500">Many comparable listings</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-2xl border border-amber-200 bg-amber-50/70 px-4 py-3">
+                      <span className="font-medium text-slate-700">Middels</span>
+                      <span className="text-sm text-slate-500">Moderate data basis</span>
+                    </div>
+                    <div className="flex items-center justify-between rounded-2xl border border-rose-200 bg-rose-50/70 px-4 py-3">
+                      <span className="font-medium text-slate-700">Lav</span>
+                      <span className="text-sm text-slate-500">Thinner market support</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="sm:col-span-2 rounded-[30px] border-slate-200 bg-white shadow-[0_18px_55px_rgba(15,23,42,0.06)]">
+                <CardContent className="p-6">
+                  <div className="grid gap-4 md:grid-cols-3">
+                    <div className="rounded-[24px] border border-slate-200 bg-slate-50/80 p-5">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Current price</div>
+                      <div className="mt-2 text-2xl font-semibold text-slate-900">269 000 kr</div>
+                    </div>
+                    <div className="rounded-[24px] border border-sky-200 bg-sky-50/80 p-5">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-slate-400">Estimated market value</div>
+                      <div className="mt-2 text-2xl font-semibold text-slate-900">300 000 kr</div>
+                    </div>
+                    <div className="rounded-[24px] border border-emerald-200 bg-emerald-50/80 p-5">
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-700">Potential profit</div>
+                      <div className="mt-2 text-2xl font-semibold text-emerald-700">31 000 kr</div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </section>
+
+        <section id="how" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
+            <SectionLabel>How it works</SectionLabel>
+            <h2 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">
+              Built to deliver clarity in seconds.
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-slate-600">
+              OversiktPro fits directly into the buyer workflow on FINN.no. No spreadsheet work, no manual comparison loop, no switching between tabs to form a first judgment.
+            </p>
+          </motion.div>
+
+          <div className="mt-12 grid gap-5 lg:grid-cols-4">
+            {[
+              {
+                step: "01",
+                icon: <Search className="h-5 w-5" />,
+                title: "Open a FINN car listing",
+                text: "Visit a used-car ad on FINN.no the same way you already browse today.",
+              },
+              {
+                step: "02",
+                icon: <ScanSearch className="h-5 w-5" />,
+                title: "OversiktPro reads the page",
+                text: "The extension extracts brand, model, year, mileage, price, seller type, and listing identity.",
+              },
+              {
+                step: "03",
+                icon: <LineChart className="h-5 w-5" />,
+                title: "It compares live market signals",
+                text: "Backend analysis estimates market value, deal score, confidence, freshness, and tracking context.",
+              },
+              {
+                step: "04",
+                icon: <BadgeCheck className="h-5 w-5" />,
+                title: "You get instant decision support",
+                text: "See whether the car looks overpriced, fair, or like a strong deal — with clearer market context.",
+              },
+            ].map((item) => (
+              <motion.div key={item.step} {...fadeUp}>
+                <Card className="h-full rounded-[30px] border-slate-200 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-700">
+                        {item.icon}
+                      </div>
+                      <div className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">{item.step}</div>
+                    </div>
+                    <h3 className="mt-6 text-xl font-semibold tracking-tight text-slate-900">{item.title}</h3>
+                    <p className="mt-3 text-[15px] leading-7 text-slate-600">{item.text}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        <section id="discovery" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <div className="grid items-center gap-10 lg:grid-cols-[0.95fr_1.05fr]">
+            <motion.div {...fadeUp}>
+              <SectionLabel>Deal discovery</SectionLabel>
+              <h2 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">
+                Find promising listings before the market fully reacts.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-slate-600">
+                OversiktPro is not only a point-in-time calculator. It also supports continuous tracking and newly discovered deal candidates from a broader FINN monitoring pipeline.
+              </p>
+              <div className="mt-8 space-y-4">
+                {[
+                  "Surface candidate outliers from continuously tracked listings",
+                  "Filter promising opportunities faster",
+                  "Use live analysis to verify each candidate before acting",
+                  "Combine discovery and valuation in one workflow",
+                ].map((item) => (
+                  <div key={item} className="flex items-center gap-3 text-slate-700">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-100">
+                      <ChevronRight className="h-4 w-4" />
+                    </div>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            <motion.div {...fadeUp}>
+              <DiscoveryPanel />
+            </motion.div>
+          </div>
+        </section>
+
+        <section id="trust" className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+          <div className="rounded-[38px] border border-slate-200 bg-[linear-gradient(135deg,#ffffff,#f8fbff)] p-8 shadow-[0_28px_80px_rgba(15,23,42,0.07)] md:p-10 lg:p-12">
+            <motion.div {...fadeUp} className="mx-auto max-w-3xl text-center">
+              <SectionLabel>Trust and decision quality</SectionLabel>
+              <h2 className="text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">
+                Better data. Better timing. Better judgment.
+              </h2>
+              <p className="mt-5 text-lg leading-8 text-slate-600">
+                OversiktPro is designed for people who want more than intuition, but also more nuance than a single rigid score. It helps users move faster while staying aware of uncertainty and listing context.
+              </p>
+            </motion.div>
+
+            <div className="mt-12 grid gap-5 md:grid-cols-2 xl:grid-cols-5">
+              {[
+                [<TrendingDown className="h-5 w-5" />, "Avoid overpriced listings"],
+                [<TrendingUp className="h-5 w-5" />, "Spot strong deals faster"],
+                [<ShieldCheck className="h-5 w-5" />, "Understand estimate confidence"],
+                [<Clock3 className="h-5 w-5" />, "Track freshness and price movement"],
+                [<BarChart3 className="h-5 w-5" />, "Verify with clearer market context"],
+              ].map(([icon, text]) => (
+                <div key={text} className="rounded-[26px] border border-slate-200 bg-white px-5 py-6 text-center shadow-sm">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-sky-200 bg-sky-50 text-sky-700">
+                    {icon as React.ReactNode}
+                  </div>
+                  <div className="mt-4 text-[15px] font-medium leading-7 text-slate-700">{text}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-7xl px-6 pb-24 pt-8 lg:px-8 lg:pb-28">
+          <motion.div
+            {...fadeUp}
+            className="overflow-hidden rounded-[40px] border border-slate-200 bg-[linear-gradient(135deg,#eff6ff,#ffffff_40%,#f8fafc)] p-8 shadow-[0_30px_90px_rgba(15,23,42,0.08)] md:p-10 lg:p-12"
+          >
+            <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
+              <div>
+                <SectionLabel>Final call to action</SectionLabel>
+                <h2 className="max-w-3xl text-3xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-5xl">
+                  Start spotting better used-car opportunities on FINN.no.
+                </h2>
+                <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
+                  Install OversiktPro to get live valuation, deal score, confidence, market tracking, and deal discovery where decisions actually happen — on the listing itself.
+                </p>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+                <Button className="rounded-full bg-slate-900 px-6 py-6 text-base text-white hover:bg-slate-800">
+                  Add to Chrome
+                </Button>
+                <Button variant="outline" className="rounded-full border-slate-300 bg-white px-6 py-6 text-base text-slate-700 hover:bg-slate-50">
+                  Join waitlist
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        </section>
+      </main>
+
+      <footer className="border-t border-slate-200/80 bg-white/80">
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-6 py-8 text-sm text-slate-500 md:flex-row md:items-center md:justify-between lg:px-8">
+          <div>
+            <span className="font-semibold text-slate-700">OversiktPro</span> · Chrome extension for used-car intelligence on FINN.no
+          </div>
+          <div className="flex flex-wrap items-center gap-5">
+            <a href="#features" className="transition hover:text-slate-900">Features</a>
+            <a href="#how" className="transition hover:text-slate-900">How it works</a>
+            <a href="#discovery" className="transition hover:text-slate-900">Discovery</a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
