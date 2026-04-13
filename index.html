@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OversiktPro — Used-car intelligence for FINN.no</title>
-  <meta name="description" content="OversiktPro is a Chrome extension for FINN.no that overlays live valuation, deal score, confidence, market tracking, and deal discovery directly on used-car listings." />
+  <title>OversiktPro — Bruktbilintelligens for FINN.no</title>
+  <meta name="description" content="OversiktPro er en Chrome-utvidelse for FINN.no som viser live verdivurdering, deal score, sikkerhet, markedssporing og deal discovery direkte på bruktbilannonser." />
   <meta name="theme-color" content="#f7fbff" />
   <style>
     :root {
@@ -28,7 +28,7 @@
       --shadow: 0 24px 80px rgba(15, 23, 42, 0.08);
       --shadow-lg: 0 30px 90px rgba(14, 30, 58, 0.16);
       --radius: 28px;
-      --max: 1200px;
+      --max: 1280px;
     }
 
     * { box-sizing: border-box; }
@@ -44,7 +44,7 @@
     }
 
     a { color: inherit; text-decoration: none; }
-    .container { width: min(calc(100% - 32px), var(--max)); margin: 0 auto; }
+    .container { width: min(calc(100% - 40px), var(--max)); margin: 0 auto; }
 
     .site-header {
       position: sticky;
@@ -65,15 +65,22 @@
 
     .brand { display: flex; align-items: center; gap: 12px; }
     .brand-mark {
-      width: 46px;
-      height: 46px;
-      border-radius: 18px;
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
       display: grid;
       place-items: center;
       background: linear-gradient(135deg, #e0f2fe, #dbeafe 55%, #ffffff);
       box-shadow: 0 6px 20px rgba(15,23,42,0.08);
       border: 1px solid #dbeafe;
-      font-size: 20px;
+      overflow: hidden;
+      flex: 0 0 auto;
+    }
+    .brand-mark img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
     .brand-title { font-size: 22px; font-weight: 900; font-style: italic; letter-spacing: -0.03em; }
     .brand-sub { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.22em; color: var(--muted-2); }
@@ -115,12 +122,24 @@
       box-shadow: 0 10px 25px rgba(15,23,42,0.05);
     }
 
-    .hero { padding: 48px 0 90px; }
+    .hero { padding: 58px 0 90px; }
     .hero-grid {
       display: grid;
-      grid-template-columns: 1.02fr 0.98fr;
-      gap: 56px;
-      align-items: center;
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.12fr);
+      gap: 70px;
+      align-items: start;
+    }
+
+    .hero-copy {
+      padding-top: 36px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-visual {
+      margin-top: 6px;
+      transform: translateY(34px) scale(1.03);
+      transform-origin: top center;
     }
 
     h1 {
@@ -178,33 +197,35 @@
     .stat-pill .value { margin-top: 6px; font-size: 18px; font-weight: 700; color: var(--text); }
 
     .listing-shell {
-      border-radius: 34px;
-      padding: 14px;
+      border-radius: 36px;
+      padding: 16px;
       background: rgba(255,255,255,0.88);
       border: 1px solid var(--line);
       box-shadow: var(--shadow);
       position: relative;
       overflow: hidden;
+      min-height: 740px;
     }
 
     .listing-shell::before {
       content: "";
       position: absolute;
       inset: -80px -40px auto auto;
-      width: 220px;
-      height: 220px;
+      width: 240px;
+      height: 240px;
       background: radial-gradient(circle, rgba(125,211,252,0.55), transparent 60%);
       filter: blur(18px);
       pointer-events: none;
     }
 
     .listing-inner {
-      border-radius: 28px;
-      padding: 16px;
+      border-radius: 30px;
+      padding: 18px;
       background: rgba(248,250,252,0.82);
       border: 1px solid var(--line-soft);
       position: relative;
       z-index: 1;
+      min-height: 708px;
     }
 
     .listing-topbar {
@@ -244,10 +265,11 @@
 
     .listing-grid {
       display: grid;
-      grid-template-columns: 1.14fr 0.86fr;
-      gap: 16px;
-      margin-top: 16px;
+      grid-template-columns: minmax(0, 1.18fr) minmax(360px, 0.82fr);
+      gap: 18px;
+      margin-top: 18px;
       align-items: start;
+      min-height: 620px;
     }
 
     .image-card {
@@ -255,38 +277,84 @@
       border: 1px solid var(--line);
       border-radius: 24px;
       padding: 16px;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
     }
 
     .image-stage {
-      aspect-ratio: 16 / 10;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #e2e8f0, #f8fafc 40%, #dbeafe);
-      padding: 16px;
+      flex: 1;
+      min-height: 560px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, #e2e8f0, #f8fafc 38%, #dbeafe);
+      padding: 18px;
+      display: flex;
     }
 
     .image-stage-inner {
+      width: 100%;
       height: 100%;
-      border-radius: 18px;
+      border-radius: 20px;
       border: 1px solid rgba(255,255,255,0.8);
-      background: rgba(255,255,255,0.55);
-      padding: 14px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.72), rgba(255,255,255,0.48)),
+        radial-gradient(circle at top right, rgba(125,211,252,0.4), transparent 30%);
+      padding: 18px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
     .image-caption { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
-    .image-chips { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .image-specs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 16px;
+      max-width: 260px;
+    }
     .image-chip {
-      padding: 10px 12px;
+      padding: 11px 12px;
       text-align: center;
       font-size: 12px;
       color: var(--muted);
       border-radius: 14px;
-      background: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(255,255,255,0.7);
+      box-shadow: 0 6px 16px rgba(15,23,42,0.04);
+    }
+    .listing-placeholder {
+      flex: 1;
+      margin-top: 18px;
+      border-radius: 22px;
+      border: 1px dashed #d6e4f1;
+      background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0.16));
+      position: relative;
+      overflow: hidden;
+    }
+    .listing-placeholder::before {
+      content: "";
+      position: absolute;
+      inset: 22px 22px auto 22px;
+      height: 68px;
+      border-radius: 16px;
+      background: rgba(255,255,255,0.62);
       border: 1px solid rgba(255,255,255,0.7);
     }
+    .listing-placeholder::after {
+      content: "";
+      position: absolute;
+      inset: 120px 22px 22px 22px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0.14));
+      border: 1px solid rgba(255,255,255,0.48);
+    }
 
-    .mock-extension-wrap { position: relative; }
+    .mock-extension-wrap {
+      position: relative;
+      align-self: stretch;
+      display: flex;
+      align-items: stretch;
+    }
     .mock-extension-wrap::before {
       content: "";
       position: absolute;
@@ -305,6 +373,9 @@
       background: linear-gradient(135deg, #eef8ff, #ffffff 48%, #eff6ff);
       border: 1px solid #cfe9fb;
       box-shadow: var(--shadow-lg);
+      width: 100%;
+      min-height: 600px;
+      display: flex;
     }
 
     .mock-extension-card {
@@ -314,6 +385,9 @@
       box-shadow: 0 18px 60px rgba(30,41,59,0.10);
       overflow: hidden;
       backdrop-filter: blur(10px);
+      width: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     .mock-head {
@@ -337,7 +411,7 @@
       border: 1px solid #bae6fd;
     }
 
-    .mock-body { padding: 18px 20px 20px; }
+    .mock-body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
     .price-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .mini-box {
       border-radius: 18px;
@@ -358,6 +432,9 @@
       border: 1px solid var(--line);
       background: white;
       box-shadow: 0 10px 24px rgba(15,23,42,0.04);
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
 
     .deal-top {
@@ -604,591 +681,4 @@
     .step-badge {
       width: 48px; height: 48px; border-radius: 18px; display: grid; place-items: center; background: #eff6ff; border: 1px solid #cfe9fb; color: #0369a1; font-size: 20px;
     }
-    .step-number { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.24em; color: var(--muted-2); }
-    .step-card h3 { margin: 22px 0 0; font-size: 24px; line-height: 1.15; letter-spacing: -0.03em; }
-    .step-card p { margin: 12px 0 0; color: var(--muted); line-height: 1.8; font-size: 15px; }
-
-    .content-grid {
-      display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      gap: 22px;
-      align-items: center;
-    }
-    .content-panel h2 { margin: 0; }
-    .bullet-list { margin-top: 28px; display: grid; gap: 16px; }
-    .bullet-item { display: flex; align-items: center; gap: 12px; color: #334155; }
-    .bullet-icon {
-      width: 32px; height: 32px; border-radius: 999px; display: grid; place-items: center; background: #f0f9ff; border: 1px solid #cfe9fb; color: #0369a1; font-weight: 900;
-      flex: 0 0 auto;
-    }
-
-    .discovery-panel {
-      border-radius: 30px;
-      border: 1px solid #dfe8f1;
-      background: rgba(255,255,255,0.92);
-      box-shadow: 0 20px 70px rgba(15,23,42,0.08);
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-    }
-    .discovery-head {
-      display: flex; justify-content: space-between; align-items: flex-start; gap: 18px; padding: 24px 26px; border-bottom: 1px solid var(--line-soft);
-    }
-    .discovery-head .title { font-size: 16px; font-weight: 700; }
-    .discovery-head .sub { margin-top: 6px; font-size: 14px; color: var(--muted); line-height: 1.7; }
-    .discovery-live {
-      padding: 8px 12px; border-radius: 999px; background: #f0f9ff; border: 1px solid #bae6fd; color: #0369a1; font-size: 12px; font-weight: 700; white-space: nowrap;
-    }
-    .discovery-list { padding: 18px 26px 0; display: grid; gap: 12px; }
-    .discovery-row {
-      display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 18px; border-radius: 22px; background: rgba(248,250,252,0.85); border: 1px solid var(--line);
-    }
-    .discovery-row .car { font-size: 15px; font-weight: 700; }
-    .discovery-row .meta { margin-top: 5px; font-size: 14px; color: var(--muted); }
-    .score-good, .score-warn {
-      padding: 8px 12px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap;
-    }
-    .score-good { color: var(--good); background: var(--good-bg); border: 1px solid #bbf7d0; }
-    .score-warn { color: var(--warn); background: var(--warn-bg); border: 1px solid #fed7aa; }
-    .discovery-note {
-      margin: 18px 26px 26px; padding: 16px 18px; border-radius: 22px; border: 1px dashed #bae6fd; background: rgba(240,249,255,0.7); color: var(--muted); line-height: 1.8; font-size: 14px;
-    }
-
-    .trust-panel {
-      border-radius: 38px;
-      border: 1px solid var(--line);
-      background: linear-gradient(135deg, #ffffff, #f8fbff);
-      padding: 40px;
-      box-shadow: var(--shadow);
-    }
-    .trust-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-top: 42px; }
-    .trust-item {
-      border-radius: 26px; border: 1px solid var(--line); background: white; padding: 24px 18px; text-align: center; box-shadow: 0 8px 18px rgba(15,23,42,0.04);
-    }
-    .trust-item .icon-box { margin: 0 auto 16px; }
-    .trust-item p { margin: 0; color: #334155; line-height: 1.7; font-size: 15px; }
-
-    .cta-panel {
-      overflow: hidden;
-      border-radius: 40px;
-      border: 1px solid var(--line);
-      background: linear-gradient(135deg, #eff6ff, #ffffff 40%, #f8fafc);
-      padding: 42px;
-      box-shadow: var(--shadow);
-    }
-    .cta-grid { display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: center; }
-    .cta-actions { display: flex; flex-direction: column; gap: 12px; }
-
-    .footer {
-      border-top: 1px solid var(--line-soft);
-      background: rgba(255,255,255,0.82);
-    }
-    .footer .inner {
-      display: flex; justify-content: space-between; gap: 20px; align-items: center; padding: 26px 0; color: var(--muted); font-size: 14px; flex-wrap: wrap;
-    }
-    .footer strong { color: #334155; }
-    .footer-links { display: flex; gap: 22px; flex-wrap: wrap; }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity .6s ease, transform .6s ease;
-    }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media (max-width: 1100px) {
-      nav { display: none; }
-      .hero-grid, .split-grid, .content-grid, .cta-grid, .listing-grid { grid-template-columns: 1fr; }
-      .feature-grid { grid-template-columns: repeat(2, 1fr); }
-      .steps-grid { grid-template-columns: repeat(2, 1fr); }
-      .trust-grid { grid-template-columns: repeat(3, 1fr); }
-    }
-
-    @media (max-width: 760px) {
-      .header-actions .btn-link { display: none; }
-      .hero { padding-top: 30px; padding-bottom: 64px; }
-      .stat-grid, .feature-grid, .info-grid, .steps-grid, .triple-grid, .trust-grid { grid-template-columns: 1fr; }
-      .price-grid { grid-template-columns: 1fr; }
-      .hero-actions, .cta-actions { flex-direction: column; }
-      .btn { width: 100%; }
-      .soft-panel, .trust-panel, .cta-panel, .card, .step-card, .mini-card { padding: 24px; }
-      .discovery-head, .discovery-row, .listing-topbar, .mock-head, .market-row, .deal-top { flex-direction: column; align-items: flex-start; }
-      .discovery-live, .listing-live, .mock-tag, .deal-pill, .confidence-pill { white-space: normal; }
-      h1 { line-height: 1.02; }
-    }
-  </style>
-</head>
-<body>
-  <header class="site-header">
-    <div class="container inner">
-      <a href="#top" class="brand">
-        <div class="brand-mark">🚗</div>
-        <div>
-          <div class="brand-title">OversiktPro</div>
-          <div class="brand-sub">FINN.no car intelligence</div>
-        </div>
-      </a>
-
-      <nav>
-        <a href="#features">Features</a>
-        <a href="#how">How it works</a>
-        <a href="#discovery">Discovery</a>
-        <a href="#trust">Why it matters</a>
-      </nav>
-
-      <div class="header-actions">
-        <a class="btn btn-link" href="#cta">Join waitlist</a>
-        <a class="btn btn-primary" href="#cta">Add to Chrome</a>
-      </div>
-    </div>
-  </header>
-
-  <main id="top">
-    <section class="hero">
-      <div class="container hero-grid">
-        <div class="reveal visible">
-          <div class="eyebrow">Used-car intelligence for FINN.no</div>
-          <h1>See the real value behind every FINN car listing.</h1>
-          <p class="lead">
-            OversiktPro is a Chrome extension that overlays live valuation, deal score, confidence, and market tracking directly on top of used-car listings on FINN.no — so you can judge a listing faster, with more clarity.
-          </p>
-
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="#cta">Add to Chrome</a>
-            <a class="btn btn-secondary" href="#preview">See live product preview</a>
-          </div>
-
-          <div class="stat-grid">
-            <div class="stat-pill">
-              <div class="label">Market value</div>
-              <div class="value">Instant estimate</div>
-            </div>
-            <div class="stat-pill">
-              <div class="label">Deal score</div>
-              <div class="value">Good / neutral / overpriced</div>
-            </div>
-            <div class="stat-pill">
-              <div class="label">Confidence</div>
-              <div class="value">Transparent reliability</div>
-            </div>
-          </div>
-
-          <div class="mini-trust">
-            <span><i class="dot-good"></i> Built for real-world used-car decisions</span>
-            <span><i class="dot-sky"></i> Designed to support judgment, not replace it</span>
-          </div>
-        </div>
-
-        <div class="listing-shell reveal" id="preview">
-          <div class="listing-inner">
-            <div class="listing-topbar">
-              <div class="left">
-                <div class="listing-icon">🔎</div>
-                <div>
-                  <div class="listing-title">FINN.no used-car listing</div>
-                  <div class="listing-sub">BMW 320d xDrive · 2019 · 124 000 km</div>
-                </div>
-              </div>
-              <div class="listing-live">Live page</div>
-            </div>
-
-            <div class="listing-grid">
-              <div class="image-card">
-                <div class="image-stage">
-                  <div class="image-stage-inner">
-                    <div class="image-caption">
-                      <span>Listing image area</span>
-                      <span>FINN.no</span>
-                    </div>
-                    <div class="image-chips">
-                      <div class="image-chip">2019</div>
-                      <div class="image-chip">124k km</div>
-                      <div class="image-chip">269k kr</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="mock-extension-wrap">
-                <div class="mock-extension">
-                  <div class="mock-extension-card">
-                    <div class="mock-head">
-                      <div>
-                        <div class="mock-brand">OversiktPro</div>
-                        <div class="mock-brand-sub">Live FINN listing analysis</div>
-                      </div>
-                      <div class="mock-tag">FINN.no</div>
-                    </div>
-
-                    <div class="mock-body">
-                      <div class="price-grid">
-                        <div class="mini-box">
-                          <div class="mini-label">Price</div>
-                          <div class="mini-value">269 000 kr</div>
-                        </div>
-                        <div class="mini-box good">
-                          <div class="mini-label">Potential profit</div>
-                          <div class="mini-value">+31 000 kr</div>
-                        </div>
-                      </div>
-
-                      <div class="analysis-card">
-                        <div class="deal-top">
-                          <div>
-                            <div class="section-mini-label">Deal score</div>
-                            <div class="deal-status">Strong deal</div>
-                          </div>
-                          <div class="deal-pill">+11.5%</div>
-                        </div>
-
-                        <div class="tooltip-row">
-                          <div class="tooltip">
-                            <span>Confidence</span>
-                            <span class="tooltip-badge">i</span>
-                            <div class="tooltip-content">
-                              High confidence means many comparable listings were found, making the estimate more reliable. Lower confidence means thinner market data and more uncertainty.
-                            </div>
-                          </div>
-                        </div>
-
-                        <div class="market-box">
-                          <div class="market-row">
-                            <div>
-                              <div class="section-mini-label">Estimated market value</div>
-                              <div class="mini-value" style="font-size:32px;">300 000 kr</div>
-                            </div>
-                            <div class="confidence-pill">Høy</div>
-                          </div>
-                        </div>
-
-                        <div class="insight-list">
-                          <div class="insight-row">
-                            <div class="label">Days on market</div>
-                            <div class="value">9 days</div>
-                          </div>
-                          <div class="insight-row">
-                            <div class="label">Price reduction</div>
-                            <div class="value tone-good">-10 000 kr</div>
-                          </div>
-                          <div class="insight-row">
-                            <div class="label">Listing freshness</div>
-                            <div class="value tone-good">New this week</div>
-                          </div>
-                          <div class="insight-row">
-                            <div class="label">Seller type</div>
-                            <div class="value">Dealer</div>
-                          </div>
-                          <div class="insight-row">
-                            <div class="label">Price history</div>
-                            <div class="value tone-warn">2 changes detected</div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="features">
-      <div class="container">
-        <div class="section-head reveal">
-          <div class="eyebrow">Core product features</div>
-          <h2>A live valuation assistant built for serious used-car buyers.</h2>
-          <p>
-            OversiktPro turns a raw listing into a clearer market view, combining live listing data, comparable signals, tracking context, and practical confidence indicators.
-          </p>
-        </div>
-
-        <div class="feature-grid">
-          <div class="card reveal">
-            <div class="icon-box">📄</div>
-            <h3>Live listing analysis</h3>
-            <p>Read key signals directly from the FINN listing, including brand, model, year, mileage, seller type, price, and listing identity.</p>
-          </div>
-          <div class="card reveal">
-            <div class="icon-box">🎯</div>
-            <h3>Deal score with context</h3>
-            <p>Instantly understand whether a car looks overpriced, fairly priced, or unusually attractive relative to estimated market value.</p>
-          </div>
-          <div class="card reveal">
-            <div class="icon-box">📊</div>
-            <h3>Market value estimation</h3>
-            <p>Surface an estimated market value and potential profit so undervalued listings stand out immediately.</p>
-          </div>
-          <div class="card reveal">
-            <div class="icon-box">🛡️</div>
-            <h3>Transparent confidence</h3>
-            <p>OversiktPro does not just give you a number. It also shows confidence so users understand when the estimate is strong and when caution is needed.</p>
-          </div>
-          <div class="card reveal">
-            <div class="icon-box">⏱️</div>
-            <h3>Price history and tracking</h3>
-            <p>See if a listing is new, how long it has been on the market, whether the price was reduced, and how the listing has evolved over time.</p>
-          </div>
-          <div class="card reveal">
-            <div class="icon-box">✨</div>
-            <h3>Discovery beyond the listing</h3>
-            <p>Track newly discovered deal candidates from a continuously monitored FINN dataset, then verify them with live listing analysis.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section>
-      <div class="container split-grid">
-        <div class="soft-panel reveal">
-          <div class="eyebrow">Valuation clarity</div>
-          <h2>Know whether the asking price actually makes sense.</h2>
-          <p>
-            One of the strongest hooks in OversiktPro is the feeling of instant market orientation. Open a listing and immediately see current asking price, estimated market value, and upside potential in one clear view.
-          </p>
-
-          <div class="check-list">
-            <div class="check-item"><div class="check-dot">✓</div><div>Spot undervalued listings faster</div></div>
-            <div class="check-item"><div class="check-dot">✓</div><div>Avoid spending time on clearly overpriced ads</div></div>
-            <div class="check-item"><div class="check-dot">✓</div><div>Compare asking price against live estimated value</div></div>
-            <div class="check-item"><div class="check-dot">✓</div><div>Understand whether upside looks meaningful or marginal</div></div>
-          </div>
-        </div>
-
-        <div class="info-grid">
-          <div class="mini-card reveal">
-            <div class="top">
-              <div class="title">Deal score</div>
-              <div class="tooltip">
-                <span style="font-size:12px;color:var(--muted);font-weight:700;">How to read it</span>
-                <span class="tooltip-badge">i</span>
-                <div class="tooltip-content">
-                  Deal score reflects how attractive the asking price appears versus estimated market value. Users should still check service history, replaced parts, accident history, and hidden faults.
-                </div>
-              </div>
-            </div>
-            <div class="big-score">
-              <div class="tag">Good deal</div>
-              <div class="number">+11.5%</div>
-              <p>Highlights when the listing looks meaningfully below estimated market value.</p>
-            </div>
-          </div>
-
-          <div class="mini-card reveal">
-            <div class="top">
-              <div class="title">Confidence</div>
-              <div class="tooltip">
-                <span style="font-size:12px;color:var(--muted);font-weight:700;">Why it matters</span>
-                <span class="tooltip-badge">i</span>
-                <div class="tooltip-content">
-                  Confidence communicates how solid the estimate looks based on the depth and quality of comparable market data.
-                </div>
-              </div>
-            </div>
-            <div class="confidence-list">
-              <div class="confidence-row high"><strong>Høy</strong><span>Many comparable listings</span></div>
-              <div class="confidence-row medium"><strong>Middels</strong><span>Moderate data basis</span></div>
-              <div class="confidence-row low"><strong>Lav</strong><span>Thinner market support</span></div>
-            </div>
-          </div>
-
-          <div class="mini-card reveal" style="grid-column: 1 / -1;">
-            <div class="triple-grid">
-              <div class="triple-box">
-                <div class="label">Current price</div>
-                <div class="value">269 000 kr</div>
-              </div>
-              <div class="triple-box sky">
-                <div class="label">Estimated market value</div>
-                <div class="value">300 000 kr</div>
-              </div>
-              <div class="triple-box good">
-                <div class="label">Potential profit</div>
-                <div class="value">31 000 kr</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="how">
-      <div class="container">
-        <div class="section-head reveal">
-          <div class="eyebrow">How it works</div>
-          <h2>Built to deliver clarity in seconds.</h2>
-          <p>
-            OversiktPro fits directly into the buyer workflow on FINN.no. No spreadsheet work, no manual comparison loop, no switching between tabs to form a first judgment.
-          </p>
-        </div>
-
-        <div class="steps-grid">
-          <div class="step-card reveal">
-            <div class="step-top"><div class="step-badge">🔎</div><div class="step-number">01</div></div>
-            <h3>Open a FINN car listing</h3>
-            <p>Visit a used-car ad on FINN.no the same way you already browse today.</p>
-          </div>
-          <div class="step-card reveal">
-            <div class="step-top"><div class="step-badge">📥</div><div class="step-number">02</div></div>
-            <h3>OversiktPro reads the page</h3>
-            <p>The extension extracts brand, model, year, mileage, price, seller type, and listing identity.</p>
-          </div>
-          <div class="step-card reveal">
-            <div class="step-top"><div class="step-badge">📈</div><div class="step-number">03</div></div>
-            <h3>It compares live market signals</h3>
-            <p>Backend analysis estimates market value, deal score, confidence, freshness, and tracking context.</p>
-          </div>
-          <div class="step-card reveal">
-            <div class="step-top"><div class="step-badge">✅</div><div class="step-number">04</div></div>
-            <h3>You get instant decision support</h3>
-            <p>See whether the car looks overpriced, fair, or like a strong deal — with clearer market context.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="discovery">
-      <div class="container content-grid">
-        <div class="content-panel reveal">
-          <div class="eyebrow">Deal discovery</div>
-          <h2>Find promising listings before the market fully reacts.</h2>
-          <p>
-            OversiktPro is not only a point-in-time calculator. It also supports continuous tracking and newly discovered deal candidates from a broader FINN monitoring pipeline.
-          </p>
-          <div class="bullet-list">
-            <div class="bullet-item"><div class="bullet-icon">›</div><span>Surface candidate outliers from continuously tracked listings</span></div>
-            <div class="bullet-item"><div class="bullet-icon">›</div><span>Filter promising opportunities faster</span></div>
-            <div class="bullet-item"><div class="bullet-icon">›</div><span>Use live analysis to verify each candidate before acting</span></div>
-            <div class="bullet-item"><div class="bullet-icon">›</div><span>Combine discovery and valuation in one workflow</span></div>
-          </div>
-        </div>
-
-        <div class="discovery-panel reveal">
-          <div class="discovery-head">
-            <div>
-              <div class="title">New deals discovered</div>
-              <div class="sub">Continuously surfaced candidate listings from tracked FINN market activity.</div>
-            </div>
-            <div class="discovery-live">Live candidate feed</div>
-          </div>
-
-          <div class="discovery-list">
-            <div class="discovery-row">
-              <div>
-                <div class="car">Volkswagen ID.4 2022</div>
-                <div class="meta">Candidate edge</div>
-              </div>
-              <div class="score-good">+24 000 kr</div>
-            </div>
-            <div class="discovery-row">
-              <div>
-                <div class="car">Toyota RAV4 Hybrid 2020</div>
-                <div class="meta">Price reduced</div>
-              </div>
-              <div class="score-good">+18 000 kr</div>
-            </div>
-            <div class="discovery-row">
-              <div>
-                <div class="car">Audi A4 Avant 2018</div>
-                <div class="meta">Low confidence</div>
-              </div>
-              <div class="score-warn">Review live</div>
-            </div>
-          </div>
-
-          <div class="discovery-note">
-            New deal candidates are designed to help users spot promising outliers early, then verify the opportunity inside the live analysis card before acting.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="trust">
-      <div class="container">
-        <div class="trust-panel reveal">
-          <div class="section-head" style="margin-bottom:0;">
-            <div class="eyebrow">Trust and decision quality</div>
-            <h2>Better data. Better timing. Better judgment.</h2>
-            <p>
-              OversiktPro is designed for people who want more than intuition, but also more nuance than a single rigid score. It helps users move faster while staying aware of uncertainty and listing context.
-            </p>
-          </div>
-
-          <div class="trust-grid">
-            <div class="trust-item">
-              <div class="icon-box">📉</div>
-              <p>Avoid overpriced listings</p>
-            </div>
-            <div class="trust-item">
-              <div class="icon-box">📈</div>
-              <p>Spot strong deals faster</p>
-            </div>
-            <div class="trust-item">
-              <div class="icon-box">🛡️</div>
-              <p>Understand estimate confidence</p>
-            </div>
-            <div class="trust-item">
-              <div class="icon-box">⏱️</div>
-              <p>Track freshness and price movement</p>
-            </div>
-            <div class="trust-item">
-              <div class="icon-box">📊</div>
-              <p>Verify with clearer market context</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="cta" style="padding-top: 18px; padding-bottom: 100px;">
-      <div class="container">
-        <div class="cta-panel reveal">
-          <div class="cta-grid">
-            <div>
-              <div class="eyebrow">Final call to action</div>
-              <h2>Start spotting better used-car opportunities on FINN.no.</h2>
-              <p>
-                Install OversiktPro to get live valuation, deal score, confidence, market tracking, and deal discovery where decisions actually happen — on the listing itself.
-              </p>
-            </div>
-
-            <div class="cta-actions">
-              <a class="btn btn-primary" href="#">Add to Chrome</a>
-              <a class="btn btn-secondary" href="#">Join waitlist</a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="container inner">
-      <div><strong>OversiktPro</strong> · Chrome extension for used-car intelligence on FINN.no</div>
-      <div class="footer-links">
-        <a href="#features">Features</a>
-        <a href="#how">How it works</a>
-        <a href="#discovery">Discovery</a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.12 });
-
-    document.querySelectorAll('.reveal').forEach((el, index) => {
-      if (index === 0) return;
-      observer.observe(el);
-    });
-  </script>
-</body>
-</html>
+    .step-number { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.24em; color: var(
