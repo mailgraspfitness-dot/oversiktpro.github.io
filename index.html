@@ -9,6 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
     :root {
       --finn-blue: #06befb;
@@ -1041,77 +1042,94 @@
       </div>
 
       <div class="preview-wrap">
-        <div class="preview-card">
-          <div class="preview-topbar">
-            <div class="preview-dot" style="background:#ff5f57;"></div>
-            <div class="preview-dot" style="background:#febc2e;"></div>
-            <div class="preview-dot" style="background:#28c840;"></div>
-            <div class="preview-bar">
-              <span class="preview-url"><strong>finn.no</strong>/bap/forsale/ad.html?finnkode=382...</span>
+        <!-- OversiktPro dark popup — Tailwind -->
+        <div class="rounded-2xl p-5 mx-auto" style="max-width:320px; background:linear-gradient(160deg,#0d1b35 0%,#0a1628 55%,#0c1a30 100%); border:1px solid rgba(6,190,251,0.18); box-shadow:0 32px 90px rgba(0,0,0,0.55),0 0 0 1px rgba(6,190,251,0.06);">
+
+          <!-- Header -->
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden" style="background:linear-gradient(145deg,#1a0a4a,#2d1070);">
+              <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+                <rect x="4" y="18" width="5" height="14" rx="1.5" fill="#7c3aed"/>
+                <rect x="11" y="12" width="5" height="20" rx="1.5" fill="#6d28d9"/>
+                <rect x="18" y="7" width="5" height="25" rx="1.5" fill="url(#barGrad)"/>
+                <defs><linearGradient id="barGrad" x1="20" y1="7" x2="20" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#06befb"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
+                <circle cx="29" cy="11" r="7" fill="none" stroke="#06befb" stroke-width="2"/>
+                <line x1="34" y1="16" x2="37" y2="19" stroke="#06befb" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <span class="flex-1 text-xl font-bold text-white" style="letter-spacing:-0.02em;">OversiktPro</span>
+            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-lg font-light" style="background:rgba(6,190,251,0.18);border:1px solid rgba(6,190,251,0.32);color:#06befb;">−</div>
+          </div>
+
+          <!-- Sikkerhet -->
+          <div class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:rgba(150,180,220,0.65);letter-spacing:0.12em;">Sikkerhet</div>
+          <div class="mb-4">
+            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold" style="background:#d97706;color:#1a0500;">
+              Middels
+              <span class="w-4 h-4 rounded-full inline-flex items-center justify-center text-xs font-bold" style="border:1.5px solid rgba(0,0,0,0.35);color:rgba(0,0,0,0.55);">i</span>
+            </span>
+          </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;">
+
+          <!-- Price row -->
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:rgba(150,180,220,0.65);letter-spacing:0.1em;">Nåværende pris</div>
+              <div class="font-extrabold text-white" style="font-size:28px;letter-spacing:-0.04em;line-height:1;">429 900 kr</div>
+            </div>
+            <div class="text-right">
+              <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:rgba(150,180,220,0.55);letter-spacing:0.09em;">Estimert verdi</div>
+              <div class="text-sm font-bold" style="color:#06befb;">~428 000 – 492 000</div>
             </div>
           </div>
 
-          <div class="finn-listing">
-            <div class="finn-listing-inner">
-              <div class="finn-img">🚗</div>
-              <div>
-                <div class="finn-title">BMW 320d xDrive · 2019</div>
-                <div class="finn-meta">124 000 km · Automat · Diesel<br>Oslo · Forhandler</div>
-                <div class="finn-price">269 000 kr</div>
-              </div>
-            </div>
+          <!-- Sist oppdatert -->
+          <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:rgba(150,180,220,0.65);letter-spacing:0.1em;">Sist oppdatert</div>
+          <div class="text-lg font-bold text-white mb-3">5d 5t siden</div>
+
+          <!-- Selges av -->
+          <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:rgba(150,180,220,0.65);letter-spacing:0.1em;">Selges av</div>
+          <div class="text-lg font-bold text-white">Forhandler (Upgrade AS)</div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;">
+
+          <!-- Deal Score -->
+          <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest mb-4" style="color:rgba(150,180,220,0.65);letter-spacing:0.12em;">
+            Deal score
+            <span class="w-4 h-4 rounded-full inline-flex items-center justify-center text-xs" style="border:1.5px solid rgba(150,180,220,0.38);color:rgba(150,180,220,0.65);">i</span>
           </div>
 
-          <div class="ext-overlay">
-            <div class="ext-header">
-              <div class="ext-header-left">
-                <div class="ext-logo-mark">OP</div>
-                <div>
-                  <div class="ext-name">OversiktPro</div>
-                  <div class="ext-sub">Prisanalyse &amp; Markedsinnsikt</div>
-                </div>
-              </div>
-              <div class="ext-badge">FINN.no</div>
-            </div>
-
-            <div class="ext-body">
-              <div class="ext-top-grid">
-                <div class="score-box">
-                  <div class="score-label">Deal score</div>
-                  <div class="score-value">Sterkt kjøp</div>
-                  <div class="score-pct">+11,5 %</div>
-                </div>
-                <div class="market-box">
-                  <div class="market-label">Markedsverdi</div>
-                  <div class="market-value">300 000 kr</div>
-                  <div class="confidence-pill">Sikkerhet: Høy</div>
-                </div>
-              </div>
-
-              <div class="data-rows">
-                <div class="data-row">
-                  <span class="data-row-key">Potensiell fortjeneste</span>
-                  <span class="data-row-val good">+31 000 kr</span>
-                </div>
-                <div class="data-row">
-                  <span class="data-row-key">Dager på markedet</span>
-                  <span class="data-row-val">9 dager</span>
-                </div>
-                <div class="data-row">
-                  <span class="data-row-key">Prisreduksjon</span>
-                  <span class="data-row-val good">−10 000 kr</span>
-                </div>
-                <div class="data-row">
-                  <span class="data-row-key">Annonsestatus</span>
-                  <span class="data-row-val good">Ny denne uken</span>
-                </div>
-                <div class="data-row">
-                  <span class="data-row-key">Prishistorikk</span>
-                  <span class="data-row-val warn">2 endringer registrert</span>
-                </div>
-              </div>
-            </div>
+          <!-- Ring -->
+          <div class="flex flex-col items-center gap-2 pb-2">
+            <svg width="130" height="130" viewBox="0 0 130 130">
+              <defs>
+                <linearGradient id="opRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#00d4a0"/>
+                  <stop offset="100%" stop-color="#06befb"/>
+                </linearGradient>
+                <filter id="ringGlow">
+                  <feGaussianBlur stdDeviation="3" result="blur"/>
+                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+              <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+              <circle cx="65" cy="65" r="54" fill="none" stroke="url(#opRingGrad)" stroke-width="10"
+                stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="159.5"
+                transform="rotate(-90 65 65)" filter="url(#ringGlow)"/>
+              <text x="65" y="72" text-anchor="middle" fill="#00d4a0" font-size="24" font-weight="800" font-family="Inter,sans-serif">53%</text>
+            </svg>
+            <div class="text-sm font-semibold" style="color:#00d4a0;">Litt under markedspris</div>
           </div>
+
+          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;">
+
+          <!-- AI Analyse -->
+          <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-2" style="color:rgba(150,180,220,0.65);letter-spacing:0.12em;">🤖 AI-Analyse</div>
+          <div class="rounded-xl p-3 text-xs leading-relaxed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(200,220,240,0.85);">
+            45.979 km og 4-hjul gir god videresalgsverdi, og du får nybilgaranti/oppgitt service, samt 2 nøkler og vinter/sommerhjul. Risiko: delvis servicehistorikk og 2024-km tilsier at ettersom flere kan ha lavere km. Anbefaling: ok kjøp, men krev bekreftet service og manglende dokumentasjon.
+          </div>
+
         </div>
       </div>
     </section>
