@@ -1,1228 +1,1208 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="nb">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OversiktPro — Prisanalyse & Markedsinnsikt for Finn.no</title>
-  <meta name="description" content="OversiktPro er en Chrome-utvidelse for FINN.no som viser markedsverdi, deal score, sikkerhet, prisendringer og markedsinnsikt direkte på bruktbilannonser." />
-  <meta name="theme-color" content="#f0f6ff" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    :root {
-      --finn-blue: #06befb;
-      --finn-core: #0063fb;
-      --finn-deep: #0047c8;
-      --finn-navy: #062058;
-
-      --bg: #f0f6ff;
-      --surface: #ffffff;
-      --surface-2: #f5f9ff;
-      --line: #dce8ff;
-      --text: #06152e;
-      --muted: #4a6080;
-      --muted-2: #8aa0be;
-
-      --good: #00875a;
-      --good-bg: #e6f7f1;
-      --good-border: #b3e6d3;
-      --warn: #c05500;
-      --warn-bg: #fff3e8;
-
-      --shadow-sm: 0 2px 8px rgba(6, 32, 88, 0.07);
-      --shadow-md: 0 8px 32px rgba(6, 32, 88, 0.10);
-      --shadow-lg: 0 24px 80px rgba(6, 32, 88, 0.14);
-      --max: 1200px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(ellipse 60% 50% at 10% 0%, rgba(6, 190, 251, 0.13) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 60% at 90% 15%, rgba(0, 99, 251, 0.09) 0%, transparent 55%),
-        radial-gradient(ellipse 40% 40% at 50% 100%, rgba(6, 32, 88, 0.06) 0%, transparent 60%);
-    }
-
-    a { color: inherit; text-decoration: none; }
-    .container { width: min(calc(100% - 48px), var(--max)); margin: 0 auto; position: relative; z-index: 1; }
-
-    /* ── HEADER ── */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: rgba(240, 246, 255, 0.82);
-      backdrop-filter: blur(20px) saturate(1.4);
-      -webkit-backdrop-filter: blur(20px) saturate(1.4);
-      border-bottom: 1px solid rgba(220, 232, 255, 0.8);
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-      padding: 16px 0;
-    }
-
-    .brand { display: flex; align-items: center; gap: 10px; }
-
-    .brand-mark {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, var(--finn-deep), var(--finn-blue));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 13px;
-      font-weight: 900;
-      color: white;
-      letter-spacing: -0.05em;
-      flex-shrink: 0;
-      box-shadow: 0 4px 12px rgba(0, 99, 251, 0.3);
-    }
-
-    .logo {
-      font-size: 17px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1;
-      color: var(--text);
-    }
-
-    .brand-sub {
-      font-size: 10px;
-      font-weight: 500;
-      color: var(--muted-2);
-      letter-spacing: 0.04em;
-      margin-top: 2px;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-      color: var(--muted);
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    nav a { transition: color 0.15s; position: relative; }
-    nav a::after {
-      content: '';
-      position: absolute;
-      bottom: -3px;
-      left: 0;
-      right: 0;
-      height: 1.5px;
-      background: var(--finn-core);
-      transform: scaleX(0);
-      transition: transform 0.2s ease;
-      border-radius: 2px;
-    }
-    nav a:hover { color: var(--text); }
-    nav a:hover::after { transform: scaleX(1); }
-
-    .header-actions { display: flex; align-items: center; gap: 10px; }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
-      min-height: 42px;
-      padding: 0 20px;
-      border-radius: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      border: 1.5px solid transparent;
-      cursor: pointer;
-      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      white-space: nowrap;
-    }
-    .btn:hover { transform: translateY(-2px); }
-    .btn:active { transform: translateY(0) scale(0.98); }
-
-    .btn-primary {
-      background: var(--finn-core);
-      color: white;
-      box-shadow: 0 4px 16px rgba(0, 99, 251, 0.28);
-    }
-    .btn-primary:hover { background: var(--finn-deep); box-shadow: 0 8px 28px rgba(0, 99, 251, 0.38); }
-
-    .btn-ghost {
-      background: transparent;
-      color: var(--muted);
-      border-color: var(--line);
-    }
-    .btn-ghost:hover { background: white; color: var(--text); border-color: #b8cff5; }
-
-    .chrome-icon {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      background: conic-gradient(#ea4335 0deg 90deg, #fbbc05 90deg 180deg, #34a853 180deg 270deg, #4285f4 270deg 360deg);
-      display: inline-block;
-      flex-shrink: 0;
-    }
-
-    /* ── EYEBROW ── */
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 14px 6px 8px;
-      border-radius: 999px;
-      background: rgba(0, 99, 251, 0.07);
-      border: 1px solid rgba(0, 99, 251, 0.18);
-      color: var(--finn-core);
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .eyebrow-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--finn-blue);
-      animation: pulse-dot 2s ease-in-out infinite;
-      flex-shrink: 0;
-    }
-
-    @keyframes pulse-dot {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.35); opacity: 0.65; }
-    }
-
-    /* ── HERO ── */
-    .hero {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 86px 24px 96px;
-      display: grid;
-      grid-template-columns: 1fr 1.05fr;
-      gap: 64px;
-      align-items: center;
-      position: relative;
-      z-index: 1;
-    }
-
-    h1 {
-      margin: 20px 0 0;
-      font-size: clamp(48px, 6.5vw, 72px);
-      line-height: 0.95;
-      letter-spacing: -0.055em;
-      font-weight: 900;
-      color: var(--text);
-    }
-
-    h1 .accent {
-      background: linear-gradient(135deg, var(--finn-core) 20%, var(--finn-blue) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .lead {
-      margin-top: 22px;
-      color: var(--muted);
-      font-size: clamp(16px, 1.7vw, 18px);
-      line-height: 1.82;
-      font-weight: 400;
-      max-width: 500px;
-    }
-
-    .hero-buttons {
-      margin-top: 34px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .btn-lg {
-      min-height: 52px;
-      padding: 0 28px;
-      font-size: 15px;
-      border-radius: 12px;
-    }
-
-    .trust-row {
-      margin-top: 26px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .trust-item {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--muted);
-    }
-
-    .trust-check {
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      background: var(--good-bg);
-      border: 1.5px solid var(--good-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .trust-check svg {
-      width: 9px;
-      height: 9px;
-      stroke: var(--good);
-      stroke-width: 2.5;
-      fill: none;
-    }
-
-    .stat-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 32px;
-    }
-
-    .pill {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .pill-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      background: rgba(0, 99, 251, 0.07);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      flex-shrink: 0;
-    }
-
-    .pill-label {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--muted-2);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    .pill-value {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-      margin-top: 1px;
-      letter-spacing: -0.02em;
-    }
-
-    /* ── PREVIEW CARD ── */
-    .preview-wrap {
-      position: relative;
-      z-index: 1;
-    }
-
-    .preview-wrap::before {
-      content: '';
-      position: absolute;
-      top: -40px;
-      right: -60px;
-      width: 380px;
-      height: 380px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(6, 190, 251, 0.14) 0%, transparent 65%);
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .preview-card {
-      position: relative;
-      z-index: 1;
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      padding: 20px;
-      box-shadow: var(--shadow-lg);
-    }
-
-    .preview-topbar {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
-
-    .preview-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-    }
-
-    .preview-bar {
-      flex: 1;
-      height: 28px;
-      background: var(--bg);
-      border-radius: 7px;
-      border: 1px solid var(--line);
-      display: flex;
-      align-items: center;
-      padding: 0 12px;
-      gap: 6px;
-      margin-left: 6px;
-    }
-
-    .preview-url {
-      font-size: 11px;
-      color: var(--muted-2);
-      font-weight: 500;
-    }
-
-    .preview-url strong { color: var(--finn-core); font-weight: 600; }
-
-    .finn-listing {
-      background: var(--bg);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 16px;
-    }
-
-    .finn-listing-inner {
-      display: grid;
-      grid-template-columns: 100px 1fr;
-      gap: 14px;
-      align-items: start;
-    }
-
-    .finn-img {
-      width: 100px;
-      height: 70px;
-      border-radius: 10px;
-      background: linear-gradient(135deg, #dce8ff, #c5d8f8);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 26px;
-      flex-shrink: 0;
-    }
-
-    .finn-title {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-
-    .finn-meta {
-      font-size: 12px;
-      color: var(--muted);
-      margin-top: 5px;
-      line-height: 1.6;
-    }
-
-    .finn-price {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      color: var(--text);
-      margin-top: 8px;
-    }
-
-    .ext-overlay {
-      margin-top: 14px;
-      background: white;
-      border: 1.5px solid rgba(0, 99, 251, 0.2);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: 0 12px 40px rgba(0, 99, 251, 0.12);
-    }
-
-    .ext-header {
-      background: linear-gradient(135deg, #0047c8, #0063fb 60%, #06befb);
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .ext-header-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .ext-logo-mark {
-      width: 28px;
-      height: 28px;
-      border-radius: 7px;
-      background: rgba(255, 255, 255, 0.22);
-      border: 1px solid rgba(255, 255, 255, 0.32);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 11px;
-      font-weight: 900;
-      color: white;
-      letter-spacing: -0.05em;
-    }
-
-    .ext-name {
-      font-size: 15px;
-      font-weight: 800;
-      color: white;
-      letter-spacing: -0.03em;
-    }
-
-    .ext-sub {
-      font-size: 10px;
-      color: rgba(255, 255, 255, 0.65);
-      font-weight: 500;
-      margin-top: 1px;
-    }
-
-    .ext-badge {
-      padding: 4px 10px;
-      border-radius: 7px;
-      font-size: 11px;
-      font-weight: 700;
-      color: rgba(255, 255, 255, 0.9);
-      background: rgba(255, 255, 255, 0.16);
-      border: 1px solid rgba(255, 255, 255, 0.24);
-    }
-
-    .ext-body { padding: 14px 16px 16px; }
-
-    .ext-top-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .score-box {
-      background: var(--good-bg);
-      border: 1px solid var(--good-border);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .score-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--good);
-      opacity: 0.8;
-    }
-
-    .score-value {
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      color: var(--good);
-      margin-top: 4px;
-      line-height: 1;
-    }
-
-    .score-pct {
-      display: inline-flex;
-      align-items: center;
-      margin-top: 6px;
-      padding: 3px 8px;
-      background: var(--good);
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 6px;
-    }
-
-    .market-box {
-      background: rgba(0, 99, 251, 0.05);
-      border: 1px solid rgba(0, 99, 251, 0.14);
-      border-radius: 14px;
-      padding: 14px;
-    }
-
-    .market-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--finn-core);
-      opacity: 0.75;
-    }
-
-    .market-value {
-      font-size: 22px;
-      font-weight: 900;
-      letter-spacing: -0.04em;
-      color: var(--finn-core);
-      margin-top: 4px;
-      line-height: 1;
-    }
-
-    .confidence-pill {
-      display: inline-flex;
-      align-items: center;
-      margin-top: 6px;
-      padding: 3px 8px;
-      background: rgba(0, 99, 251, 0.12);
-      color: var(--finn-core);
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 6px;
-    }
-
-    .data-rows {
-      margin-top: 12px;
-      background: var(--surface-2);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .data-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 14px;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .data-row:last-child { border-bottom: 0; }
-
-    .data-row-key {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--muted-2);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .data-row-val {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .data-row-val.good { color: var(--good); }
-    .data-row-val.warn { color: var(--warn); }
-
-    /* ── SECTIONS ── */
-    .section {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 100px 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .section-head {
-      max-width: 680px;
-      margin: 0 auto 52px;
-      text-align: center;
-    }
-
-    .section-head h2 {
-      margin: 18px 0 0;
-      font-size: clamp(32px, 5vw, 52px);
-      line-height: 1.02;
-      letter-spacing: -0.05em;
-      font-weight: 900;
-    }
-
-    .section-head h2 .accent {
-      background: linear-gradient(135deg, var(--finn-core), var(--finn-blue));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .section-head p {
-      margin: 18px 0 0;
-      font-size: 18px;
-      line-height: 1.82;
-      color: var(--muted);
-    }
-
-    .divider {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 24px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .divider hr { border: 0; border-top: 1px solid var(--line); }
-
-    /* ── FEATURE CARDS ── */
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .feature-card {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 28px;
-      box-shadow: var(--shadow-sm);
-      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .feature-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: linear-gradient(90deg, var(--finn-core), var(--finn-blue));
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.25s ease;
-    }
-
-    .feature-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
-    .feature-card:hover::before { transform: scaleX(1); }
-
-    .card-icon-wrap {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      background: rgba(0, 99, 251, 0.07);
-      border: 1px solid rgba(0, 99, 251, 0.12);
-      display: grid;
-      place-items: center;
-      font-size: 21px;
-      margin-bottom: 20px;
-    }
-
-    .feature-card h3 {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .feature-card p {
-      margin: 11px 0 0;
-      color: var(--muted);
-      line-height: 1.8;
-      font-size: 14px;
-    }
-
-    /* ── STEP CARDS ── */
-    .step-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-    }
-
-    .step-card {
-      background: white;
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 28px;
-      box-shadow: var(--shadow-sm);
-      position: relative;
-    }
-
-    .step-grid .step-card:not(:last-child)::after {
-      content: '→';
-      position: absolute;
-      right: -18px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 18px;
-      color: var(--muted-2);
-      z-index: 2;
-    }
-
-    .step-num {
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--finn-deep), var(--finn-blue));
-      color: white;
-      font-size: 18px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      box-shadow: 0 4px 14px rgba(0, 99, 251, 0.28);
-    }
-
-    .step-card h3 {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .step-card p {
-      margin: 11px 0 0;
-      color: var(--muted);
-      line-height: 1.8;
-      font-size: 14px;
-    }
-
-    /* ── CTA ── */
-    .cta-section {
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 0 24px 100px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .cta-inner {
-      background: linear-gradient(135deg, var(--finn-navy) 0%, #0047c8 55%, var(--finn-blue) 130%);
-      border-radius: 28px;
-      padding: 70px 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 48px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cta-inner::before {
-      content: '';
-      position: absolute;
-      top: -80px;
-      right: -80px;
-      width: 380px;
-      height: 380px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.06);
-      pointer-events: none;
-    }
-
-    .cta-inner::after {
-      content: '';
-      position: absolute;
-      bottom: -100px;
-      left: 30%;
-      width: 300px;
-      height: 300px;
-      border-radius: 50%;
-      background: rgba(6, 190, 251, 0.12);
-      pointer-events: none;
-    }
-
-    .cta-text { position: relative; z-index: 1; }
-
-    .cta-text h2 {
-      font-size: clamp(28px, 4vw, 44px);
-      font-weight: 900;
-      letter-spacing: -0.05em;
-      line-height: 1.04;
-      color: white;
-    }
-
-    .cta-text p {
-      margin-top: 14px;
-      color: rgba(255, 255, 255, 0.65);
-      font-size: 16px;
-      line-height: 1.75;
-      max-width: 440px;
-    }
-
-    .btn-cta-white {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: white;
-      color: var(--finn-core);
-      min-height: 56px;
-      padding: 0 34px;
-      font-size: 15px;
-      font-weight: 800;
-      font-family: 'Inter', sans-serif;
-      border-radius: 14px;
-      border: none;
-      flex-shrink: 0;
-      position: relative;
-      z-index: 1;
-      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
-      transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
-      cursor: pointer;
-      white-space: nowrap;
-    }
-
-    .btn-cta-white:hover {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.26);
-    }
-
-    /* ── FOOTER ── */
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 28px 24px;
-      text-align: center;
-      color: var(--muted-2);
-      font-size: 13px;
-      font-weight: 500;
-      background: rgba(240, 246, 255, 0.85);
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ── ANIMATIONS ── */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .hero-left > * {
-      animation: fadeUp 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
-    }
-    .hero-left > *:nth-child(1) { animation-delay: 0.05s; }
-    .hero-left > *:nth-child(2) { animation-delay: 0.12s; }
-    .hero-left > *:nth-child(3) { animation-delay: 0.19s; }
-    .hero-left > *:nth-child(4) { animation-delay: 0.24s; }
-    .hero-left > *:nth-child(5) { animation-delay: 0.30s; }
-    .hero-left > *:nth-child(6) { animation-delay: 0.36s; }
-
-    .preview-wrap { animation: fadeUp 0.75s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 1040px) {
-      nav { display: none; }
-      .hero { grid-template-columns: 1fr; gap: 44px; }
-      .feature-grid, .step-grid { grid-template-columns: repeat(2, 1fr); }
-      .step-grid .step-card:not(:last-child)::after { display: none; }
-      .cta-inner { flex-direction: column; align-items: flex-start; padding: 44px 36px; }
-    }
-
-    @media (max-width: 680px) {
-      .header-inner { flex-direction: column; align-items: flex-start; }
-      .header-actions { width: 100%; flex-direction: column; }
-      .btn { width: 100%; justify-content: center; }
-      .hero { padding: 52px 0 68px; }
-      h1 { font-size: 42px; }
-      .hero-buttons { flex-direction: column; }
-      .feature-grid, .step-grid { grid-template-columns: 1fr; }
-      .ext-top-grid { grid-template-columns: 1fr; }
-      .finn-listing-inner { grid-template-columns: 1fr; }
-      .finn-img { width: 100%; height: 90px; }
-      .cta-inner { padding: 36px 24px; }
-      .stat-pills { flex-direction: column; }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="OversiktPro – AI-drevet Chrome-utvidelse som analyserer bruktbilannonser på FINN.no. Se om bilen er et kupp før alle andre." />
+<title>OversiktPro — AI-prisanalyse for FINN bruktbil</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ---------- Reset & base ---------- */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  :root {
+    /* Extension palette — exact match */
+    --bg-0: #0a0d13;
+    --bg-1: #0d1117;
+    --bg-2: #131a26;
+    --ink: #f0f9ff;
+    --ink-2: #e2e8f0;
+    --ink-dim: #94a3b8;
+    --ink-faint: #64748b;
+    --line: rgba(255, 255, 255, 0.07);
+    --line-strong: rgba(56, 189, 248, 0.2);
+    --line-cyan: rgba(56, 189, 248, 0.4);
+
+    /* Neon cyan — the signature accent */
+    --cyan: #38bdf8;
+    --cyan-soft: rgba(56, 189, 248, 0.18);
+    --cyan-glow: rgba(56, 189, 248, 0.95);
+
+    /* Aurora colors */
+    --aurora-purple: rgba(147, 51, 234, 0.28);
+    --aurora-cyan: rgba(6, 182, 212, 0.22);
+
+    /* Status */
+    --good: #34d399;
+    --bad: #f87171;
+    --warn: #fbbf24;
+  }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background: var(--bg-0);
+    color: var(--ink-2);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* ---------- Background atmosphere — matches extension aurora ---------- */
+  .atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+    pointer-events: none;
+    background: var(--bg-0);
+  }
+  .atmosphere::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 50% 40% at 85% 15%, var(--aurora-purple) 0%, transparent 65%),
+      radial-gradient(ellipse 45% 50% at 15% 85%, var(--aurora-cyan) 0%, transparent 65%),
+      radial-gradient(ellipse 60% 30% at 50% 50%, rgba(56, 189, 248, 0.04) 0%, transparent 70%);
+  }
+
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    pointer-events: none;
+    animation: drift 22s ease-in-out infinite;
+  }
+  .blob-purple {
+    width: 600px; height: 600px;
+    background: rgba(147, 51, 234, 0.18);
+    top: -200px; right: -150px;
+  }
+  .blob-cyan {
+    width: 500px; height: 500px;
+    background: rgba(6, 182, 212, 0.15);
+    bottom: -100px; left: -100px;
+    animation-delay: -11s;
+  }
+
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(40px, -30px); }
+  }
+
+  /* Subtle dot grid */
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image: radial-gradient(rgba(56, 189, 248, 0.08) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 70% 50% at 50% 30%, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 30%, #000 20%, transparent 75%);
+    pointer-events: none;
+  }
+
+  /* ---------- Layout helpers ---------- */
+  .container {
+    width: 100%;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- Header ---------- */
+  header.site {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgba(13, 17, 23, 0.7);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .logo-mark {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #0c4a6e 100%);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(56, 189, 248, 0.3),
+      0 0 20px rgba(56, 189, 248, 0.25),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: grid;
+    place-items: center;
+  }
+  .logo-mark svg { width: 22px; height: 22px; position: relative; z-index: 1; }
+  .logo-mark::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(circle at 30% 30%, rgba(147, 51, 234, 0.4), transparent 60%),
+      radial-gradient(circle at 70% 80%, rgba(56, 189, 248, 0.4), transparent 60%);
+    pointer-events: none;
+  }
+  .logo-text {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: 0.2px;
+    text-shadow:
+      0 0 8px rgba(255, 255, 255, 0.3),
+      0 0 20px rgba(255, 255, 255, 0.15);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 4px;
+    border-radius: 4px;
+  }
+
+  /* ---------- Buttons ---------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 18px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: 1.5px solid var(--line-cyan);
+    transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+    font-family: inherit;
+    white-space: nowrap;
+    background: rgba(15, 23, 42, 0.5);
+    color: var(--ink);
+  }
+  .btn:hover {
+    background: rgba(56, 189, 248, 0.1);
+    border-color: var(--cyan);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 28px -8px rgba(56, 189, 248, 0.5);
+  }
+  .btn:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+  }
+  .btn-primary {
+    background: rgba(15, 23, 42, 0.6);
+    border-color: var(--cyan);
+    color: var(--ink);
+    box-shadow:
+      0 0 0 1px rgba(56, 189, 248, 0.2),
+      0 8px 24px -8px rgba(56, 189, 248, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+  .btn-primary:hover {
+    background: rgba(56, 189, 248, 0.12);
+    box-shadow:
+      0 0 0 1px rgba(56, 189, 248, 0.4),
+      0 12px 32px -8px rgba(56, 189, 248, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .btn-lg { padding: 14px 24px; font-size: 15px; }
+  .btn .chrome-icon { width: 16px; height: 16px; }
+
+  /* ---------- Hero ---------- */
+  .hero {
+    padding: 90px 0 110px;
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    font-size: 12px;
+    color: var(--cyan);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .eyebrow .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 8px var(--cyan);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  h1.hero-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(40px, 6vw, 68px);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 24px;
+    text-shadow:
+      0 0 20px rgba(255, 255, 255, 0.15),
+      0 0 60px rgba(255, 255, 255, 0.05);
+  }
+  h1.hero-title em {
+    font-style: italic;
+    color: var(--cyan);
+    text-shadow:
+      0 0 12px rgba(56, 189, 248, 0.7),
+      0 0 28px rgba(56, 189, 248, 0.5),
+      0 0 60px rgba(56, 189, 248, 0.25);
+  }
+
+  .hero-sub {
+    font-size: 17px;
+    color: var(--ink-dim);
+    max-width: 480px;
+    margin-bottom: 36px;
+    line-height: 1.6;
+  }
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-faint);
+  }
+  .hero-meta svg { width: 14px; height: 14px; color: var(--good); }
+
+  /* ---------- Extension Widget Mock — 1:1 with real extension ---------- */
+  .widget-stage {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .widget-stage::before {
+    content: '';
+    position: absolute;
+    width: 110%;
+    height: 110%;
+    top: -5%; left: -5%;
+    background:
+      radial-gradient(ellipse 50% 40% at 85% 15%, rgba(147, 51, 234, 0.35) 0%, transparent 60%),
+      radial-gradient(ellipse 45% 50% at 15% 85%, rgba(6, 182, 212, 0.3) 0%, transparent 60%);
+    filter: blur(40px);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .widget {
+    width: 100%;
+    max-width: 360px;
+    background: var(--bg-1);
+    border-radius: 20px;
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    box-shadow:
+      0 24px 60px rgba(0, 0, 0, 0.7),
+      0 0 0 1px rgba(56, 189, 248, 0.18);
+    position: relative;
+    overflow: hidden;
+    animation: widgetFloat 6s ease-in-out infinite;
+  }
+  @keyframes widgetFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .widget::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 20px;
+    background:
+      radial-gradient(ellipse 65% 55% at 88% 20%, rgba(147, 51, 234, 0.32) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 65% at 12% 85%, rgba(6, 182, 212, 0.25) 0%, transparent 70%);
+  }
+
+  .w-content {
+    position: relative;
+    z-index: 1;
+    padding: 12px 16px 18px;
+  }
+
+  /* Widget header */
+  .w-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 4px 0 10px;
+  }
+  .w-head-left { display: flex; align-items: center; gap: 10px; }
+  .w-logo {
+    width: 56px; height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 40%, #0c4a6e 100%);
+    display: grid; place-items: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.3), 0 0 20px rgba(56, 189, 248, 0.2);
+    flex-shrink: 0;
+  }
+  .w-logo::after {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(circle at 25% 30%, rgba(147, 51, 234, 0.5), transparent 60%),
+      radial-gradient(circle at 75% 80%, rgba(56, 189, 248, 0.5), transparent 60%);
+  }
+  .w-logo svg { width: 32px; height: 32px; position: relative; z-index: 1; }
+  .w-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--ink);
+    text-shadow:
+      0 0 10px rgba(255, 255, 255, 0.6),
+      0 0 25px rgba(255, 255, 255, 0.3);
+  }
+  .w-title .beta {
+    font-size: 13px;
+    font-style: italic;
+    color: var(--ink-dim);
+    margin-left: 4px;
+    text-shadow: none;
+    font-weight: 400;
+  }
+  .w-collapse {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1.5px solid rgba(56, 189, 248, 0.5);
+    color: var(--cyan);
+    display: grid; place-items: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  /* Widget label */
+  .w-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    margin-bottom: 5px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .w-info-dot {
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: rgba(56, 189, 248, 0.18);
+    border: 1px solid rgba(56, 189, 248, 0.4);
+    color: var(--cyan);
+    font-size: 8px;
+    font-weight: 700;
+    display: inline-grid; place-items: center;
+    line-height: 1;
+  }
+
+  /* Confidence badge */
+  .w-confidence {
+    display: inline-block;
+    padding: 3px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    background: rgba(52, 211, 153, 0.1);
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: var(--good);
+    margin-bottom: 14px;
+  }
+
+  /* Price row */
+  .w-price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .w-price-col { flex: 1; }
+  .w-price-value {
+    font-size: 22px;
+    font-weight: 800;
+    color: #e0f7ff;
+    letter-spacing: -0.01em;
+    text-shadow:
+      0 0 8px rgba(56, 189, 248, 1),
+      0 0 20px rgba(56, 189, 248, 0.85),
+      0 0 45px rgba(56, 189, 248, 0.55),
+      0 0 80px rgba(56, 189, 248, 0.25);
+  }
+  .w-est-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+  }
+
+  /* Glow value text */
+  .w-glow {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e0f7ff;
+    margin-bottom: 12px;
+    text-shadow:
+      0 0 6px rgba(56, 189, 248, 0.95),
+      0 0 16px rgba(56, 189, 248, 0.7),
+      0 0 32px rgba(56, 189, 248, 0.4);
+  }
+
+  .w-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.07);
+    margin: 14px 0;
+  }
+
+  /* Deal score row */
+  .w-deal {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  .w-deal-grade {
+    width: 50px; height: 50px;
+    border-radius: 11px;
+    background: rgba(52, 211, 153, 0.08);
+    border: 1.5px solid rgba(52, 211, 153, 0.5);
+    color: var(--good);
+    font-size: 24px;
+    font-weight: 800;
+    display: grid; place-items: center;
+    box-shadow: 0 0 20px rgba(52, 211, 153, 0.25);
+    flex-shrink: 0;
+  }
+  .w-deal-text { flex: 1; }
+  .w-deal-headline {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--good);
+    margin-bottom: 3px;
+  }
+  .w-deal-meta {
+    font-size: 11px;
+    color: var(--ink-faint);
+    line-height: 1.4;
+  }
+
+  /* Price log row */
+  .w-pricelog {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 10px;
+    padding: 9px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .w-pricelog-date { font-size: 12px; color: var(--ink-faint); }
+  .w-pricelog-price { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+
+  /* Negotiation block */
+  .w-negotiate-headline {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--cyan);
+    margin-bottom: 4px;
+    text-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+  }
+  .w-negotiate-sub {
+    font-size: 12px;
+    color: var(--ink-dim);
+    line-height: 1.4;
+  }
+
+  /* Candidate cards */
+  .w-cand {
+    background: rgba(56, 189, 248, 0.04);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 6px;
+  }
+  .w-cand-top {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--ink-2);
+    margin-bottom: 3px;
+  }
+  .w-cand-bot {
+    font-size: 11px;
+    color: var(--cyan);
+  }
+
+  /* Floating badges */
+  .float-badge {
+    position: absolute;
+    background: rgba(13, 17, 23, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid var(--line-cyan);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.7);
+    z-index: 2;
+  }
+  .float-badge .ic {
+    width: 26px; height: 26px;
+    border-radius: 8px;
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--cyan);
+    display: grid; place-items: center;
+    flex-shrink: 0;
+  }
+  .float-badge .ic svg { width: 14px; height: 14px; }
+  .float-badge strong {
+    display: block;
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 12px;
+    line-height: 1.3;
+  }
+  .float-badge span {
+    color: var(--ink-faint);
+    font-size: 10.5px;
+  }
+  .badge-1 {
+    top: 32px; left: -28px;
+    animation: bob 4.5s ease-in-out infinite;
+  }
+  .badge-2 {
+    bottom: 80px; right: -36px;
+    animation: bob 5.5s ease-in-out infinite -2s;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* ---------- Section heading ---------- */
+  .section { padding: 90px 0; position: relative; }
+  .section-head { text-align: center; margin-bottom: 56px; }
+  .section-tag {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 14px;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--cyan);
+    text-shadow:
+      0 0 10px rgba(56, 189, 248, 0.6),
+      0 0 30px rgba(56, 189, 248, 0.3);
+  }
+  .section-sub {
+    color: var(--ink-dim);
+    max-width: 540px;
+    margin: 0 auto;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* ---------- Features ---------- */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .feature {
+    position: relative;
+    padding: 24px;
+    background: rgba(13, 17, 23, 0.5);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    overflow: hidden;
+  }
+  .feature::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(56, 189, 248, 0.08), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+  .feature:hover {
+    transform: translateY(-3px);
+    border-color: rgba(56, 189, 248, 0.3);
+    background: rgba(13, 17, 23, 0.7);
+  }
+  .feature:hover::before { opacity: 1; }
+
+  .feat-icon {
+    width: 42px; height: 42px;
+    border-radius: 11px;
+    background: rgba(56, 189, 248, 0.08);
+    border: 1px solid rgba(56, 189, 248, 0.25);
+    display: grid; place-items: center;
+    color: var(--cyan);
+    margin-bottom: 18px;
+    box-shadow: 0 0 20px -6px rgba(56, 189, 248, 0.4);
+  }
+  .feat-icon svg { width: 20px; height: 20px; }
+  .feat-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .feat-desc {
+    font-size: 13.5px;
+    color: var(--ink-dim);
+    line-height: 1.55;
+  }
+
+  /* ---------- How it works ---------- */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    position: relative;
+  }
+  .steps::before {
+    content: '';
+    position: absolute;
+    top: 30px;
+    left: 14%;
+    right: 14%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.4), rgba(56, 189, 248, 0.4), transparent);
+    z-index: 0;
+  }
+  .step { text-align: center; position: relative; z-index: 1; }
+  .step-num {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    background: var(--bg-1);
+    border: 1.5px solid rgba(56, 189, 248, 0.4);
+    display: grid; place-items: center;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-weight: 500;
+    font-size: 24px;
+    color: var(--cyan);
+    margin: 0 auto 22px;
+    box-shadow:
+      0 0 30px -8px rgba(56, 189, 248, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    text-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+    position: relative;
+  }
+  .step-num::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(56, 189, 248, 0.18), transparent 70%);
+    z-index: -1;
+  }
+  .step-title {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: -0.01em;
+  }
+  .step-desc {
+    font-size: 14px;
+    color: var(--ink-dim);
+    max-width: 240px;
+    margin: 0 auto;
+    line-height: 1.55;
+  }
+
+  /* ---------- Final CTA ---------- */
+  .cta-section { padding: 60px 0 110px; }
+  .cta-card {
+    position: relative;
+    padding: 64px 48px;
+    border-radius: 24px;
+    background: var(--bg-1);
+    border: 1px solid rgba(56, 189, 248, 0.2);
+    text-align: center;
+    overflow: hidden;
+    box-shadow:
+      0 40px 100px -30px rgba(0, 0, 0, 0.8),
+      0 0 0 1px rgba(56, 189, 248, 0.1);
+  }
+  .cta-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 65% 55% at 85% 15%, rgba(147, 51, 234, 0.32) 0%, transparent 70%),
+      radial-gradient(ellipse 55% 65% at 15% 85%, rgba(6, 182, 212, 0.25) 0%, transparent 70%);
+  }
+  .cta-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(56, 189, 248, 0.6), transparent);
+  }
+  .cta-title {
+    position: relative;
+    font-family: 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(32px, 4.2vw, 52px);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 16px;
+  }
+  .cta-title em {
+    font-style: italic;
+    color: var(--cyan);
+    text-shadow:
+      0 0 12px rgba(56, 189, 248, 0.7),
+      0 0 28px rgba(56, 189, 248, 0.4);
+  }
+  .cta-sub {
+    position: relative;
+    color: var(--ink-dim);
+    margin: 0 auto 36px;
+    max-width: 480px;
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .cta-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .trust {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+  .trust svg { width: 14px; height: 14px; color: var(--good); }
+
+  /* ---------- Footer ---------- */
+  footer {
+    padding: 36px 0;
+    border-top: 1px solid var(--line);
+    color: var(--ink-faint);
+    font-size: 13px;
+  }
+  .foot {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .foot a {
+    color: var(--ink-faint);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .foot a:hover { color: var(--ink-dim); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 940px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 70px; }
+    .widget { max-width: 340px; margin: 0 auto; }
+    .features { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: 1fr; gap: 36px; }
+    .steps::before { display: none; }
+    .nav-links { display: none; }
+    .hero { padding: 60px 0 80px; }
+    .section { padding: 70px 0; }
+    .cta-card { padding: 48px 24px; }
+  }
+  @media (max-width: 540px) {
+    .features { grid-template-columns: 1fr; }
+    .hero-actions { flex-direction: column; align-items: stretch; }
+    .hero-actions .btn { justify-content: center; }
+    .hero-meta { justify-content: center; }
+    .badge-1 { left: -10px; top: 16px; }
+    .badge-2 { right: -10px; bottom: 60px; }
+    .float-badge { font-size: 11px; padding: 8px 10px; }
+    .float-badge .ic { width: 22px; height: 22px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
 </head>
 <body>
 
-  <header>
-    <div class="container header-inner">
-      <a href="#top" class="brand">
-        <div class="brand-mark">OP</div>
-        <div>
-          <div class="logo">OversiktPro</div>
-          <div class="brand-sub">Prisanalyse for Finn.no</div>
-        </div>
+<div class="atmosphere" aria-hidden="true">
+  <div class="blob blob-purple"></div>
+  <div class="blob blob-cyan"></div>
+</div>
+<div class="grid-overlay" aria-hidden="true"></div>
+
+<header class="site">
+  <div class="container">
+    <nav class="nav" aria-label="Hovedmeny">
+      <a href="#" class="logo" aria-label="OversiktPro hjem">
+        <span class="logo-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="18" width="3.5" height="9" rx="1" fill="#a78bfa"/>
+            <rect x="10" y="13" width="3.5" height="14" rx="1" fill="#7dd3fc"/>
+            <rect x="15" y="9" width="3.5" height="18" rx="1" fill="#38bdf8"/>
+            <rect x="20" y="14" width="3.5" height="13" rx="1" fill="#22d3ee"/>
+            <circle cx="22" cy="11" r="4" stroke="#a5f3fc" stroke-width="1.6" fill="rgba(125,211,252,0.15)"/>
+            <line x1="25" y1="14" x2="27.5" y2="16.5" stroke="#a5f3fc" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="logo-text">OversiktPro</span>
       </a>
+      <ul class="nav-links">
+        <li><a href="#funksjoner">Funksjoner</a></li>
+        <li><a href="#analyse">Analyse</a></li>
+        <li><a href="#chrome">Chrome</a></li>
+      </ul>
+      <a href="#chrome" class="btn btn-primary">
+        <svg class="chrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"/>
+          <circle cx="12" cy="12" r="3.5"/>
+          <path d="M12 8.5h8.5M7.5 14.5L4 21M16.5 14.5L20 21"/>
+        </svg>
+        Legg til Chrome — gratis
+      </a>
+    </nav>
+  </div>
+</header>
 
-      <nav>
-        <a href="#funksjoner">Funksjoner</a>
-        <a href="#hvordan">Hvordan det fungerer</a>
-        <a href="#oppdag">Oppdag deals</a>
-      </nav>
+<main>
 
-      <div class="header-actions">
-        <a href="#funksjoner" class="btn btn-ghost">Se funksjoner</a>
-        <a href="#" class="btn btn-primary">
-          <span class="chrome-icon"></span>
-          Legg til i Chrome
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <main id="top">
-
-    <section class="hero">
-      <div class="hero-left">
-        <div class="eyebrow">
-          <span class="eyebrow-dot"></span>
-          Chrome-utvidelse for FINN.no
-        </div>
-
-        <h1>Se den <span class="accent">virkelige verdien</span> bak FINN-annonsen.</h1>
-
-        <p class="lead">
-          OversiktPro viser markedsverdi, deal score, sikkerhet og prishistorikk direkte på bruktbilannonser — slik at du raskere kan vurdere om det er en god deal eller ikke.
-        </p>
-
-        <div class="hero-buttons">
-          <a href="#" class="btn btn-primary btn-lg">
-            <span class="chrome-icon"></span>
-            Legg til i Chrome — gratis
-          </a>
-          <a href="#funksjoner" class="btn btn-ghost btn-lg">Se alle funksjoner</a>
-        </div>
-
-        <div class="trust-row">
-          <div class="trust-item">
-            <div class="trust-check">
-              <svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1"/></svg>
-            </div>
-            Seriøs bruktbilvurdering
-          </div>
-          <div class="trust-item">
-            <div class="trust-check">
-              <svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1"/></svg>
-            </div>
-            Støtter — erstatter ikke — vurderingen din
-          </div>
-          <div class="trust-item">
-            <div class="trust-check">
-              <svg viewBox="0 0 12 10"><polyline points="1,5 4.5,8.5 11,1"/></svg>
-            </div>
-            Ingen registrering nødvendig
-          </div>
-        </div>
-
-        <div class="stat-pills">
-          <div class="pill">
-            <div class="pill-icon">📊</div>
-            <div>
-              <div class="pill-label">Markedsverdi</div>
-              <div class="pill-value">Øyeblikkelig estimat</div>
-            </div>
-          </div>
-          <div class="pill">
-            <div class="pill-icon">🎯</div>
-            <div>
-              <div class="pill-label">Deal score</div>
-              <div class="pill-value">God, nøytral eller dyr</div>
-            </div>
-          </div>
-          <div class="pill">
-            <div class="pill-icon">🛡️</div>
-            <div>
-              <div class="pill-label">Sikkerhet</div>
-              <div class="pill-value">Tydelig vurdering</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="preview-wrap">
-        <!-- OversiktPro dark popup — Tailwind -->
-        <div class="rounded-2xl p-5 mx-auto" style="max-width:320px; background:linear-gradient(160deg,#0d1b35 0%,#0a1628 55%,#0c1a30 100%); border:1px solid rgba(6,190,251,0.18); box-shadow:0 32px 90px rgba(0,0,0,0.55),0 0 0 1px rgba(6,190,251,0.06);">
-
-          <!-- Header -->
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-14 h-14 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden" style="background:linear-gradient(145deg,#1a0a4a,#2d1070);">
-              <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-                <rect x="4" y="18" width="5" height="14" rx="1.5" fill="#7c3aed"/>
-                <rect x="11" y="12" width="5" height="20" rx="1.5" fill="#6d28d9"/>
-                <rect x="18" y="7" width="5" height="25" rx="1.5" fill="url(#barGrad)"/>
-                <defs><linearGradient id="barGrad" x1="20" y1="7" x2="20" y2="32" gradientUnits="userSpaceOnUse"><stop stop-color="#06befb"/><stop offset="1" stop-color="#7c3aed"/></linearGradient></defs>
-                <circle cx="29" cy="11" r="7" fill="none" stroke="#06befb" stroke-width="2"/>
-                <line x1="34" y1="16" x2="37" y2="19" stroke="#06befb" stroke-width="2" stroke-linecap="round"/>
+  <!-- ---------- HERO ---------- -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-text">
+          <span class="eyebrow"><span class="dot"></span> Live på FINN.no — drevet av AI</span>
+          <h1 class="hero-title">Se om bruktbilen<br/>faktisk er <em>et kupp.</em></h1>
+          <p class="hero-sub">OversiktPro analyserer FINN-annonser i sanntid og forteller deg om prisen er for høy, riktig — eller en sjelden god deal. Direkte i nettleseren.</p>
+          <div class="hero-actions">
+            <a href="#chrome" class="btn btn-primary btn-lg">
+              <svg class="chrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="9"/>
+                <circle cx="12" cy="12" r="3.5"/>
+                <path d="M12 8.5h8.5M7.5 14.5L4 21M16.5 14.5L20 21"/>
               </svg>
-            </div>
-            <span class="flex-1 text-xl font-bold text-white" style="letter-spacing:-0.02em;">OversiktPro</span>
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center text-lg font-light" style="background:rgba(6,190,251,0.18);border:1px solid rgba(6,190,251,0.32);color:#06befb;">−</div>
-          </div>
-
-          <!-- Sikkerhet -->
-          <div class="text-xs font-semibold uppercase tracking-widest mb-2" style="color:rgba(150,180,220,0.65);letter-spacing:0.12em;">Sikkerhet</div>
-          <div class="mb-4">
-            <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold" style="background:#d97706;color:#1a0500;">
-              Middels
-              <span class="w-4 h-4 rounded-full inline-flex items-center justify-center text-xs font-bold" style="border:1.5px solid rgba(0,0,0,0.35);color:rgba(0,0,0,0.55);">i</span>
+              Legg til Chrome — gratis
+            </a>
+            <span class="hero-meta">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>
+              Ingen registrering. Aktiveres på FINN.
             </span>
           </div>
+        </div>
 
-          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;">
+        <!-- Extension widget mock — exact match to real extension -->
+        <div class="widget-stage" aria-label="Forhåndsvisning av OversiktPro-utvidelsen">
+          <div class="widget" role="img" aria-label="Eksempel på OversiktPro-analyse av en bruktbilannonse">
+            <div class="w-content">
 
-          <!-- Price row -->
-          <div class="flex justify-between items-start mb-3">
+              <div class="w-head">
+                <div class="w-head-left">
+                  <div class="w-logo" aria-hidden="true">
+                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="5" y="18" width="3.5" height="9" rx="1" fill="#a78bfa"/>
+                      <rect x="10" y="13" width="3.5" height="14" rx="1" fill="#7dd3fc"/>
+                      <rect x="15" y="9" width="3.5" height="18" rx="1" fill="#38bdf8"/>
+                      <rect x="20" y="14" width="3.5" height="13" rx="1" fill="#22d3ee"/>
+                      <circle cx="22" cy="11" r="4" stroke="#a5f3fc" stroke-width="1.6" fill="rgba(125,211,252,0.15)"/>
+                      <line x1="25" y1="14" x2="27.5" y2="16.5" stroke="#a5f3fc" stroke-width="1.6" stroke-linecap="round"/>
+                    </svg>
+                  </div>
+                  <div class="w-title">OversiktPro<span class="beta">Beta</span></div>
+                </div>
+                <div class="w-collapse" aria-hidden="true">−</div>
+              </div>
+
+              <div class="w-label">Sikkerhet</div>
+              <div class="w-confidence">Høy</div>
+
+              <div class="w-price-row">
+                <div class="w-price-col">
+                  <div class="w-label">Nåværende pris</div>
+                  <div class="w-price-value">289 000 kr</div>
+                </div>
+                <div class="w-price-col" style="text-align:right;">
+                  <div class="w-label" style="justify-content:flex-end;">Estimert verdi</div>
+                  <div class="w-est-value">~295 000 – 322 000</div>
+                </div>
+              </div>
+
+              <div class="w-label">Sist oppdatert</div>
+              <div class="w-glow">2t 18m siden</div>
+
+              <div class="w-label">Selges av</div>
+              <div class="w-glow" style="margin-bottom: 4px;">Privatperson · Oslo</div>
+
+              <div class="w-divider"></div>
+
+              <div class="w-label">Deal Score <span class="w-info-dot">i</span></div>
+              <div class="w-deal">
+                <div class="w-deal-grade">A</div>
+                <div class="w-deal-text">
+                  <div class="w-deal-headline">Sterkt kupp</div>
+                  <div class="w-deal-meta">Snitt: 307 400 kr · 14 biler ±5k km · hk-match</div>
+                </div>
+              </div>
+
+              <div class="w-divider"></div>
+
+              <div class="w-label">Prislogg <span class="w-info-dot">i</span></div>
+              <div class="w-pricelog">
+                <span class="w-pricelog-date">28.4.2026</span>
+                <span class="w-pricelog-price">289 000 kr</span>
+              </div>
+
+              <div class="w-divider"></div>
+
+              <div class="w-negotiate-headline">Be om 8 000 – 14 000 kr avslag</div>
+              <div class="w-negotiate-sub">Litt under markedet — det finnes rom for forhandling.</div>
+
+              <div class="w-divider"></div>
+
+              <div class="w-label">Topp kandidater <span class="w-info-dot">i</span></div>
+              <div class="w-cand">
+                <div class="w-cand-top">307 000 kr · 38 000 km · 2022</div>
+                <div class="w-cand-bot">18 000 kr dyrere · 4k flere km · → Se annonse</div>
+              </div>
+              <div class="w-cand">
+                <div class="w-cand-top">312 000 kr · 41 000 km · 2022</div>
+                <div class="w-cand-bot">23 000 kr dyrere · 7k flere km · → Se annonse</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Floating badges -->
+          <div class="float-badge badge-1" aria-hidden="true">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>
+            </span>
             <div>
-              <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:rgba(150,180,220,0.65);letter-spacing:0.1em;">Nåværende pris</div>
-              <div class="font-extrabold text-white" style="font-size:28px;letter-spacing:-0.04em;line-height:1;">429 900 kr</div>
-            </div>
-            <div class="text-right">
-              <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:rgba(150,180,220,0.55);letter-spacing:0.09em;">Estimert verdi</div>
-              <div class="text-sm font-bold" style="color:#06befb;">~428 000 – 492 000</div>
+              <strong>Under markedspris</strong>
+              <span>Bekreftet av 14 lignende</span>
             </div>
           </div>
 
-          <!-- Sist oppdatert -->
-          <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:rgba(150,180,220,0.65);letter-spacing:0.1em;">Sist oppdatert</div>
-          <div class="text-lg font-bold text-white mb-3">5d 5t siden</div>
-
-          <!-- Selges av -->
-          <div class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:rgba(150,180,220,0.65);letter-spacing:0.1em;">Selges av</div>
-          <div class="text-lg font-bold text-white">Forhandler (Upgrade AS)</div>
-
-          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;">
-
-          <!-- Deal Score -->
-          <div class="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest mb-4" style="color:rgba(150,180,220,0.65);letter-spacing:0.12em;">
-            Deal score
-            <span class="w-4 h-4 rounded-full inline-flex items-center justify-center text-xs" style="border:1.5px solid rgba(150,180,220,0.38);color:rgba(150,180,220,0.65);">i</span>
+          <div class="float-badge badge-2" aria-hidden="true">
+            <span class="ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </span>
+            <div>
+              <strong>Analyse på 1,2 sek</strong>
+              <span>Direkte på FINN-annonsen</span>
+            </div>
           </div>
-
-          <!-- Ring -->
-          <div class="flex flex-col items-center gap-2 pb-2">
-            <svg width="130" height="130" viewBox="0 0 130 130">
-              <defs>
-                <linearGradient id="opRingGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stop-color="#00d4a0"/>
-                  <stop offset="100%" stop-color="#06befb"/>
-                </linearGradient>
-                <filter id="ringGlow">
-                  <feGaussianBlur stdDeviation="3" result="blur"/>
-                  <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-                </filter>
-              </defs>
-              <circle cx="65" cy="65" r="54" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
-              <circle cx="65" cy="65" r="54" fill="none" stroke="url(#opRingGrad)" stroke-width="10"
-                stroke-linecap="round" stroke-dasharray="339.3" stroke-dashoffset="159.5"
-                transform="rotate(-90 65 65)" filter="url(#ringGlow)"/>
-              <text x="65" y="72" text-anchor="middle" fill="#00d4a0" font-size="24" font-weight="800" font-family="Inter,sans-serif">53%</text>
-            </svg>
-            <div class="text-sm font-semibold" style="color:#00d4a0;">Litt under markedspris</div>
-          </div>
-
-          <hr style="border:none;border-top:1px solid rgba(255,255,255,0.08);margin:14px 0;">
-
-          <!-- AI Analyse -->
-          <div class="flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-2" style="color:rgba(150,180,220,0.65);letter-spacing:0.12em;">🤖 AI-Analyse</div>
-          <div class="rounded-xl p-3 text-xs leading-relaxed" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(200,220,240,0.85);">
-            45.979 km og 4-hjul gir god videresalgsverdi, og du får nybilgaranti/oppgitt service, samt 2 nøkler og vinter/sommerhjul. Risiko: delvis servicehistorikk og 2024-km tilsier at ettersom flere kan ha lavere km. Anbefaling: ok kjøp, men krev bekreftet service og manglende dokumentasjon.
-          </div>
-
         </div>
-      </div>
-    </section>
 
-    <div class="divider"><hr /></div>
-
-    <section class="section" id="funksjoner">
-      <div class="section-head">
-        <div class="eyebrow"><span class="eyebrow-dot"></span> Kjernefunksjoner</div>
-        <h2>Alt du trenger for <span class="accent">smarte kjøp.</span></h2>
-        <p>OversiktPro gjør en vanlig FINN-annonse om til et tydeligere markedsbilde med prisvurdering, deal score, sikkerhet og relevant historikk samlet på ett sted.</p>
-      </div>
-
-      <div class="feature-grid">
-        <div class="feature-card">
-          <div class="card-icon-wrap">📄</div>
-          <h3>Live analyse av annonsen</h3>
-          <p>Les merke, modell, årsmodell, kilometerstand, pris, selgertype og nøkkelinformasjon direkte fra FINN-annonsen automatisk.</p>
-        </div>
-        <div class="feature-card">
-          <div class="card-icon-wrap">🎯</div>
-          <h3>Deal score med kontekst</h3>
-          <p>Forstå umiddelbart om bilen virker overpriset, fair priset eller som et mulig godt kjøp sammenlignet med markedet.</p>
-        </div>
-        <div class="feature-card">
-          <div class="card-icon-wrap">📊</div>
-          <h3>Estimert markedsverdi</h3>
-          <p>Se estimert markedsverdi og mulig fortjeneste, slik at undervurderte annonser blir enklere å oppdage raskt.</p>
-        </div>
-        <div class="feature-card">
-          <div class="card-icon-wrap">🛡️</div>
-          <h3>Tydelig sikkerhetsnivå</h3>
-          <p>OversiktPro viser hvor sterk analysen er, slik at du vet når datagrunnlaget virker solid og når du bør være forsiktig.</p>
-        </div>
-        <div class="feature-card">
-          <div class="card-icon-wrap">⏱️</div>
-          <h3>Pris- og markedshistorikk</h3>
-          <p>Se hvor lenge bilen har ligget ute, om prisen er redusert, om annonsen er ny og hvordan historikken har utviklet seg.</p>
-        </div>
-        <div class="feature-card" id="oppdag">
-          <div class="card-icon-wrap">✨</div>
-          <h3>Oppdag nye deals</h3>
-          <p>Finn interessante biler tidlig gjennom kontinuerlig overvåkning av FINN-markedet, og verifiser dem i den live analysen.</p>
-        </div>
-      </div>
-    </section>
-
-    <div class="divider"><hr /></div>
-
-    <section class="section" id="hvordan">
-      <div class="section-head">
-        <div class="eyebrow"><span class="eyebrow-dot"></span> Hvordan det fungerer</div>
-        <h2>Innsikt på <span class="accent">tre sekunder.</span></h2>
-        <p>OversiktPro passer rett inn i arbeidsflyten på FINN.no. Du åpner annonsen som vanlig og får umiddelbart en strukturert vurdering.</p>
-      </div>
-
-      <div class="step-grid">
-        <div class="step-card">
-          <div class="step-num">1</div>
-          <h3>Åpne en bilannonse på FINN.no</h3>
-          <p>Bruk FINN slik du allerede gjør i dag, uten ekstra steg eller manuell sammenligning i flere faner.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">2</div>
-          <h3>OversiktPro leser annonsen</h3>
-          <p>Utvidelsen henter ut viktige signaler som merke, modell, årsmodell, kilometerstand, pris og selgertype automatisk.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">3</div>
-          <h3>Markedet analyseres i bakgrunnen</h3>
-          <p>Systemet estimerer markedsverdi, deal score, sikkerhet, potensiell fortjeneste og relevant markedshistorikk.</p>
-        </div>
-      </div>
-    </section>
-
-    <div class="cta-section">
-      <div class="cta-inner">
-        <div class="cta-text">
-          <h2>Klar til å finne din neste gode deal?</h2>
-          <p>Legg til OversiktPro i Chrome og få umiddelbar markedsinnsikt på alle FINN-bilannonser du besøker — helt gratis.</p>
-        </div>
-        <a href="#" class="btn-cta-white">
-          <span class="chrome-icon"></span>
-          Legg til i Chrome — gratis
-        </a>
       </div>
     </div>
+  </section>
 
-  </main>
+  <!-- ---------- FEATURES ---------- -->
+  <section class="section" id="funksjoner">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-tag">Funksjoner</span>
+        <h2 class="section-title">Alt du trenger for å avsløre<br/>prisen på en <em>bruktbil.</em></h2>
+        <p class="section-sub">Fire kjerneanalyser som kjøres automatisk i det øyeblikket du åpner en FINN-annonse.</p>
+      </div>
 
-  <footer>
-    <strong style="color: var(--muted); font-weight: 700;">OversiktPro</strong> · Prisanalyse &amp; Markedsinnsikt for Finn.no
-  </footer>
+      <div class="features">
+        <article class="feature">
+          <div class="feat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4v3a4 4 0 0 1-8 0V6a4 4 0 0 1 4-4z"/><path d="M5 12a7 7 0 0 0 14 0"/><path d="M12 19v3"/><path d="M9 22h6"/></svg>
+          </div>
+          <h3 class="feat-title">AI prisanalyse</h3>
+          <p class="feat-desc">Modellen vurderer årsmodell, kilometerstand, utstyr og marked og gir deg estimert reell verdi.</p>
+        </article>
+
+        <article class="feature">
+          <div class="feat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
+          </div>
+          <h3 class="feat-title">Prishistorikk</h3>
+          <p class="feat-desc">Se hvordan prisen på annonsen — og lignende biler — har utviklet seg de siste månedene.</p>
+        </article>
+
+        <article class="feature">
+          <div class="feat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+          </div>
+          <h3 class="feat-title">Lignende annonser</h3>
+          <p class="feat-desc">Sammenlikn umiddelbart med andre biler i samme klasse, område og prisklasse.</p>
+        </article>
+
+        <article class="feature">
+          <div class="feat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
+          </div>
+          <h3 class="feat-title">Dekk og felger</h3>
+          <p class="feat-desc">OversiktPro leser ut dekkdetaljer, mønsterdybde og felgtype når informasjonen er tilgjengelig.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- HOW IT WORKS ---------- -->
+  <section class="section" id="analyse">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-tag">Hvordan det fungerer</span>
+        <h2 class="section-title">Tre steg. <em>Null styr.</em></h2>
+        <p class="section-sub">OversiktPro jobber stille i bakgrunnen og dukker opp akkurat når du trenger den.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3 class="step-title">Åpne FINN-annonsen</h3>
+          <p class="step-desc">Surf bruktbil på FINN.no helt som vanlig — ingen ekstra steg.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3 class="step-title">OversiktPro analyserer</h3>
+          <p class="step-desc">AI-en henter prisdata, historikk og lignende annonser på sekunder.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3 class="step-title">Du ser om bilen er verdt prisen</h3>
+          <p class="step-desc">Få deal score, markedsverdi og en klar anbefaling — før du tar kontakt.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---------- FINAL CTA ---------- -->
+  <section class="cta-section" id="chrome">
+    <div class="container">
+      <div class="cta-card">
+        <h2 class="cta-title">Slutt å gjette.<br/><em>Begynn å vinne budrunden.</em></h2>
+        <p class="cta-sub">Installer OversiktPro på under 10 sekunder og få AI-prisanalyse på hver eneste FINN-annonse du åpner.</p>
+        <div class="cta-actions">
+          <a href="#" class="btn btn-primary btn-lg">
+            <svg class="chrome-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/>
+              <circle cx="12" cy="12" r="3.5"/>
+              <path d="M12 8.5h8.5M7.5 14.5L4 21M16.5 14.5L20 21"/>
+            </svg>
+            Legg til Chrome — gratis
+          </a>
+          <span class="trust">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4.5 8-12V5l-8-3-8 3v5c0 7.5 8 12 8 12z"/><path d="M9 12l2 2 4-4"/></svg>
+            Trygg, GDPR-vennlig, ingen kontoopprettelse
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div class="foot">
+      <div>© 2026 OversiktPro · Laget for det norske bruktbilmarkedet</div>
+      <div style="display:flex; gap:24px;">
+        <a href="#">Personvern</a>
+        <a href="#">Vilkår</a>
+        <a href="mailto:hei@oversiktpro.no">Kontakt</a>
+      </div>
+    </div>
+  </div>
+</footer>
 
 </body>
 </html>
