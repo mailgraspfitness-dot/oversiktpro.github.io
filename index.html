@@ -12,7 +12,9 @@
   /* ---------- Reset & base ---------- */
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
+
   :root {
+    /* Extension palette — exact match */
     --bg-0: #0a0d13;
     --bg-1: #0d1117;
     --bg-2: #131a26;
@@ -23,15 +25,22 @@
     --line: rgba(255, 255, 255, 0.07);
     --line-strong: rgba(56, 189, 248, 0.2);
     --line-cyan: rgba(56, 189, 248, 0.4);
+
+    /* Neon cyan — the signature accent */
     --cyan: #38bdf8;
     --cyan-soft: rgba(56, 189, 248, 0.18);
     --cyan-glow: rgba(56, 189, 248, 0.95);
+
+    /* Aurora colors */
     --aurora-purple: rgba(147, 51, 234, 0.28);
     --aurora-cyan: rgba(6, 182, 212, 0.22);
+
+    /* Status */
     --good: #34d399;
     --bad: #f87171;
     --warn: #fbbf24;
   }
+
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     background: var(--bg-0);
@@ -42,6 +51,8 @@
     overflow-x: hidden;
     min-height: 100vh;
   }
+
+  /* ---------- Background atmosphere — matches extension aurora ---------- */
   .atmosphere {
     position: fixed;
     inset: 0;
@@ -59,6 +70,7 @@
       radial-gradient(ellipse 45% 50% at 15% 85%, var(--aurora-cyan) 0%, transparent 65%),
       radial-gradient(ellipse 60% 30% at 50% 50%, rgba(56, 189, 248, 0.04) 0%, transparent 70%);
   }
+
   .blob {
     position: absolute;
     border-radius: 50%;
@@ -77,10 +89,13 @@
     bottom: -100px; left: -100px;
     animation-delay: -11s;
   }
+
   @keyframes drift {
     0%, 100% { transform: translate(0, 0); }
     50% { transform: translate(40px, -30px); }
   }
+
+  /* Subtle dot grid */
   .grid-overlay {
     position: fixed;
     inset: 0;
@@ -91,12 +106,15 @@
     -webkit-mask-image: radial-gradient(ellipse 70% 50% at 50% 30%, #000 20%, transparent 75%);
     pointer-events: none;
   }
+
+  /* ---------- Layout helpers ---------- */
   .container {
     width: 100%;
     max-width: 1180px;
     margin: 0 auto;
     padding: 0 24px;
   }
+
   /* ---------- Header ---------- */
   header.site {
     position: sticky;
@@ -154,6 +172,7 @@
       0 0 8px rgba(255, 255, 255, 0.3),
       0 0 20px rgba(255, 255, 255, 0.15);
   }
+
   .nav-links {
     display: flex;
     align-items: center;
@@ -173,6 +192,7 @@
     outline-offset: 4px;
     border-radius: 4px;
   }
+
   /* ---------- Buttons ---------- */
   .btn {
     display: inline-flex;
@@ -219,6 +239,7 @@
   }
   .btn-lg { padding: 14px 24px; font-size: 15px; }
   .btn .chrome-icon { width: 16px; height: 16px; }
+
   /* ---------- Hero ---------- */
   .hero {
     padding: 90px 0 110px;
@@ -256,6 +277,7 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.4; }
   }
+
   h1.hero-title {
     font-family: 'Cormorant Garamond', Georgia, serif;
     font-size: clamp(40px, 6vw, 68px);
@@ -276,6 +298,7 @@
       0 0 28px rgba(56, 189, 248, 0.5),
       0 0 60px rgba(56, 189, 248, 0.25);
   }
+
   .hero-sub {
     font-size: 17px;
     color: var(--ink-dim);
@@ -297,7 +320,8 @@
     color: var(--ink-faint);
   }
   .hero-meta svg { width: 14px; height: 14px; color: var(--good); }
-  /* ---------- Extension Widget Mock ---------- */
+
+  /* ---------- Extension Widget Mock — 1:1 with real extension ---------- */
   .widget-stage {
     position: relative;
     display: flex;
@@ -317,6 +341,7 @@
     z-index: -1;
     pointer-events: none;
   }
+
   .widget {
     width: 100%;
     max-width: 360px;
@@ -344,11 +369,14 @@
       radial-gradient(ellipse 65% 55% at 88% 20%, rgba(147, 51, 234, 0.32) 0%, transparent 70%),
       radial-gradient(ellipse 55% 65% at 12% 85%, rgba(6, 182, 212, 0.25) 0%, transparent 70%);
   }
+
   .w-content {
     position: relative;
     z-index: 1;
     padding: 12px 16px 18px;
   }
+
+  /* Widget header */
   .w-head {
     display: flex;
     align-items: center;
@@ -402,6 +430,8 @@
     font-weight: 700;
     font-size: 14px;
   }
+
+  /* Widget label */
   .w-label {
     font-size: 10px;
     font-weight: 700;
@@ -422,6 +452,8 @@
     display: inline-grid; place-items: center;
     line-height: 1;
   }
+
+  /* Confidence badge */
   .w-confidence {
     display: inline-block;
     padding: 3px 14px;
@@ -433,6 +465,8 @@
     color: var(--good);
     margin-bottom: 14px;
   }
+
+  /* Price row */
   .w-price-row {
     display: flex;
     justify-content: space-between;
@@ -458,6 +492,8 @@
     color: var(--cyan);
     text-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
   }
+
+  /* Glow value text */
   .w-glow {
     font-size: 15px;
     font-weight: 700;
@@ -468,11 +504,14 @@
       0 0 16px rgba(56, 189, 248, 0.7),
       0 0 32px rgba(56, 189, 248, 0.4);
   }
+
   .w-divider {
     height: 1px;
     background: rgba(255, 255, 255, 0.07);
     margin: 14px 0;
   }
+
+  /* Deal score row */
   .w-deal {
     display: flex;
     align-items: center;
@@ -503,6 +542,8 @@
     color: var(--ink-faint);
     line-height: 1.4;
   }
+
+  /* Price log row */
   .w-pricelog {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.06);
@@ -515,6 +556,8 @@
   }
   .w-pricelog-date { font-size: 12px; color: var(--ink-faint); }
   .w-pricelog-price { font-size: 12px; font-weight: 700; color: var(--ink-2); }
+
+  /* Negotiation block */
   .w-negotiate-headline {
     font-size: 14px;
     font-weight: 700;
@@ -527,6 +570,8 @@
     color: var(--ink-dim);
     line-height: 1.4;
   }
+
+  /* Candidate cards */
   .w-cand {
     background: rgba(56, 189, 248, 0.04);
     border: 1px solid rgba(56, 189, 248, 0.2);
@@ -544,6 +589,8 @@
     font-size: 11px;
     color: var(--cyan);
   }
+
+  /* Floating badges */
   .float-badge {
     position: absolute;
     background: rgba(13, 17, 23, 0.92);
@@ -591,7 +638,8 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
   }
-  /* ---------- Sections ---------- */
+
+  /* ---------- Section heading ---------- */
   .section { padding: 90px 0; position: relative; }
   .section-head { text-align: center; margin-bottom: 56px; }
   .section-tag {
@@ -627,6 +675,7 @@
     font-size: 16px;
     line-height: 1.6;
   }
+
   /* ---------- Features ---------- */
   .features {
     display: grid;
@@ -660,6 +709,7 @@
     background: rgba(13, 17, 23, 0.7);
   }
   .feature:hover::before { opacity: 1; }
+
   .feat-icon {
     width: 42px; height: 42px;
     border-radius: 11px;
@@ -683,7 +733,8 @@
     color: var(--ink-dim);
     line-height: 1.55;
   }
-  /* ---------- Steps ---------- */
+
+  /* ---------- How it works ---------- */
   .steps {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -740,6 +791,7 @@
     margin: 0 auto;
     line-height: 1.55;
   }
+
   /* ---------- Final CTA ---------- */
   .cta-section { padding: 60px 0 110px; }
   .cta-card {
@@ -811,6 +863,7 @@
     font-size: 13px;
   }
   .trust svg { width: 14px; height: 14px; color: var(--good); }
+
   /* ---------- Footer ---------- */
   footer {
     padding: 36px 0;
@@ -831,6 +884,7 @@
     transition: color 0.2s;
   }
   .foot a:hover { color: var(--ink-dim); }
+
   /* ---------- Responsive ---------- */
   @media (max-width: 940px) {
     .hero-grid { grid-template-columns: 1fr; gap: 70px; }
@@ -853,6 +907,7 @@
     .float-badge { font-size: 11px; padding: 8px 10px; }
     .float-badge .ic { width: 22px; height: 22px; }
   }
+
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -863,11 +918,13 @@
 </style>
 </head>
 <body>
+
 <div class="atmosphere" aria-hidden="true">
   <div class="blob blob-purple"></div>
   <div class="blob blob-cyan"></div>
 </div>
 <div class="grid-overlay" aria-hidden="true"></div>
+
 <header class="site">
   <div class="container">
     <nav class="nav" aria-label="Hovedmeny">
@@ -900,8 +957,10 @@
     </nav>
   </div>
 </header>
+
 <main>
-  <!-- HERO -->
+
+  <!-- ---------- HERO ---------- -->
   <section class="hero">
     <div class="container">
       <div class="hero-grid">
@@ -924,10 +983,12 @@
             </span>
           </div>
         </div>
-        <!-- Extension widget mock -->
+
+        <!-- Extension widget mock — exact match to real extension -->
         <div class="widget-stage" aria-label="Forhåndsvisning av OversiktPro-utvidelsen">
           <div class="widget" role="img" aria-label="Eksempel på OversiktPro-analyse av en bruktbilannonse">
             <div class="w-content">
+
               <div class="w-head">
                 <div class="w-head-left">
                   <div class="w-logo" aria-hidden="true">
@@ -944,8 +1005,10 @@
                 </div>
                 <div class="w-collapse" aria-hidden="true">−</div>
               </div>
+
               <div class="w-label">Sikkerhet</div>
               <div class="w-confidence">Høy</div>
+
               <div class="w-price-row">
                 <div class="w-price-col">
                   <div class="w-label">Nåværende pris</div>
@@ -956,11 +1019,15 @@
                   <div class="w-est-value">~295 000 – 322 000</div>
                 </div>
               </div>
+
               <div class="w-label">Sist oppdatert</div>
               <div class="w-glow">2t 18m siden</div>
+
               <div class="w-label">Selges av</div>
               <div class="w-glow" style="margin-bottom: 4px;">Privatperson · Oslo</div>
+
               <div class="w-divider"></div>
+
               <div class="w-label">Deal Score <span class="w-info-dot">i</span></div>
               <div class="w-deal">
                 <div class="w-deal-grade">A</div>
@@ -969,16 +1036,22 @@
                   <div class="w-deal-meta">Snitt: 307 400 kr · 14 biler ±5k km · hk-match</div>
                 </div>
               </div>
+
               <div class="w-divider"></div>
+
               <div class="w-label">Prislogg <span class="w-info-dot">i</span></div>
               <div class="w-pricelog">
                 <span class="w-pricelog-date">28.4.2026</span>
                 <span class="w-pricelog-price">289 000 kr</span>
               </div>
+
               <div class="w-divider"></div>
+
               <div class="w-negotiate-headline">Be om 8 000 – 14 000 kr avslag</div>
               <div class="w-negotiate-sub">Litt under markedet — det finnes rom for forhandling.</div>
+
               <div class="w-divider"></div>
+
               <div class="w-label">Topp kandidater <span class="w-info-dot">i</span></div>
               <div class="w-cand">
                 <div class="w-cand-top">307 000 kr · 38 000 km · 2022</div>
@@ -988,8 +1061,10 @@
                 <div class="w-cand-top">312 000 kr · 41 000 km · 2022</div>
                 <div class="w-cand-bot">23 000 kr dyrere · 7k flere km · → Se annonse</div>
               </div>
+
             </div>
           </div>
+
           <!-- Floating badges -->
           <div class="float-badge badge-1" aria-hidden="true">
             <span class="ic">
@@ -1000,6 +1075,7 @@
               <span>Bekreftet av 14 lignende</span>
             </div>
           </div>
+
           <div class="float-badge badge-2" aria-hidden="true">
             <span class="ic">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
@@ -1010,11 +1086,12 @@
             </div>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 
-  <!-- FEATURES -->
+  <!-- ---------- FEATURES ---------- -->
   <section class="section" id="funksjoner">
     <div class="container">
       <div class="section-head">
@@ -1022,6 +1099,7 @@
         <h2 class="section-title">Alt du trenger for å avsløre<br/>prisen på en <em>bruktbil.</em></h2>
         <p class="section-sub">Fire kjerneanalyser som kjøres automatisk i det øyeblikket du åpner en FINN-annonse.</p>
       </div>
+
       <div class="features">
         <article class="feature">
           <div class="feat-icon" aria-hidden="true">
@@ -1030,6 +1108,7 @@
           <h3 class="feat-title">AI prisanalyse</h3>
           <p class="feat-desc">Modellen vurderer årsmodell, kilometerstand, utstyr og marked og gir deg estimert reell verdi.</p>
         </article>
+
         <article class="feature">
           <div class="feat-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
@@ -1037,6 +1116,7 @@
           <h3 class="feat-title">Prishistorikk</h3>
           <p class="feat-desc">Se hvordan prisen på annonsen — og lignende biler — har utviklet seg de siste månedene.</p>
         </article>
+
         <article class="feature">
           <div class="feat-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
@@ -1044,6 +1124,7 @@
           <h3 class="feat-title">Lignende annonser</h3>
           <p class="feat-desc">Sammenlikn umiddelbart med andre biler i samme klasse, område og prisklasse.</p>
         </article>
+
         <article class="feature">
           <div class="feat-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
@@ -1055,7 +1136,7 @@
     </div>
   </section>
 
-  <!-- HOW IT WORKS -->
+  <!-- ---------- HOW IT WORKS ---------- -->
   <section class="section" id="analyse">
     <div class="container">
       <div class="section-head">
@@ -1063,6 +1144,7 @@
         <h2 class="section-title">Tre steg. <em>Null styr.</em></h2>
         <p class="section-sub">OversiktPro jobber stille i bakgrunnen og dukker opp akkurat når du trenger den.</p>
       </div>
+
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
@@ -1083,7 +1165,7 @@
     </div>
   </section>
 
-  <!-- FINAL CTA -->
+  <!-- ---------- FINAL CTA ---------- -->
   <section class="cta-section" id="chrome">
     <div class="container">
       <div class="cta-card">
@@ -1106,18 +1188,21 @@
       </div>
     </div>
   </section>
+
 </main>
+
 <footer>
   <div class="container">
     <div class="foot">
       <div>© 2026 OversiktPro · Laget for det norske bruktbilmarkedet</div>
       <div style="display:flex; gap:24px;">
-        <a href="/privacy">Personvern</a>
+        <a href="#">Personvern</a>
         <a href="#">Vilkår</a>
         <a href="mailto:hei@oversiktpro.no">Kontakt</a>
       </div>
     </div>
   </div>
 </footer>
+
 </body>
 </html>
