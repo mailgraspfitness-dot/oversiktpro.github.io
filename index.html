@@ -41,6 +41,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 
 <style>
 /* ============================================================
@@ -1329,118 +1330,8 @@ a { color: inherit; }
         </div>
       </div>
 
-      <div class="hero-right">
-        <div class="hero-stage hero-stage-widget-only">
-          <!-- WIDGET -->
-          <div class="widget" id="widget" data-state="kupp" role="img" aria-label="OversiktPro-analyse">
-            <div class="w-content">
-              <div class="w-head">
-                <div class="w-head-left">
-                  <div class="w-logo" aria-hidden="true">
-                    <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <rect x="5" y="18" width="3.5" height="9" rx="1" fill="currentColor" opacity="0.55"/>
-                      <rect x="10" y="13" width="3.5" height="14" rx="1" fill="currentColor" opacity="0.7"/>
-                      <rect x="15" y="9" width="3.5" height="18" rx="1" fill="currentColor"/>
-                      <rect x="20" y="14" width="3.5" height="13" rx="1" fill="currentColor" opacity="0.85"/>
-                      <circle cx="22" cy="11" r="4" stroke="currentColor" stroke-width="1.6" fill="none"/>
-                      <line x1="25" y1="14" x2="27.5" y2="16.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-                    </svg>
-                  </div>
-                  <div>
-                    <div class="w-title">OversiktPro<span class="beta">Beta</span></div>
-                    <div class="w-host">www.finn.no</div>
-                  </div>
-                </div>
-                <div class="w-collapse" aria-hidden="true">−</div>
-              </div>
-
-              <div class="w-divider w-divider-tight"></div>
-
-              <div class="w-meta-row">
-                <div class="w-meta-col">
-                  <div class="w-label">Sikkerhet</div>
-                  <div class="w-confidence" data-bind="confidence">høy</div>
-                </div>
-                <div class="w-meta-col">
-                  <div class="w-label">Deal score</div>
-                  <div class="w-grade" data-bind="grade">A</div>
-                </div>
-                <div class="w-meta-col">
-                  <div class="w-label">Referanser</div>
-                  <div class="w-refs">14</div>
-                </div>
-              </div>
-
-              <div class="w-headline" data-bind="headline">Sterkt kupp</div>
-              <div class="w-headline-meta" data-bind="headlineMeta">Snitt 307 400 kr · 14 referanser</div>
-
-              <div class="w-price-block">
-                <div class="w-price-row">
-                  <div>
-                    <div class="w-label">Annonsens pris</div>
-                    <div class="w-price-value">269 000 kr</div>
-                  </div>
-                  <div style="text-align:right;">
-                    <div class="w-label">Estimert verdi</div>
-                    <div class="w-est-value" data-bind="est">295 000–322 000</div>
-                  </div>
-                </div>
-                <div class="price-bar" aria-hidden="true">
-                  <div class="price-bar-track">
-                    <div class="price-bar-band"></div>
-                    <div class="price-bar-marker" data-bind="marker" style="left: 18%;"></div>
-                  </div>
-                  <div class="price-bar-scale">
-                    <span>Lavt</span><span>Marked</span><span>Høyt</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="w-divider"></div>
-
-              <div class="w-section">
-                <div class="w-label">Forhandling</div>
-                <div class="w-negotiate-headline" data-bind="negotiate">Be om 8 000 – 14 000 kr avslag</div>
-                <div class="w-negotiate-sub" data-bind="negotiateSub">Litt under markedet — det finnes rom for forhandling.</div>
-              </div>
-
-              <div class="w-divider"></div>
-
-              <div class="w-section">
-                <div class="w-label">Topp kandidater</div>
-                <div data-bind="candidates">
-                  <div class="w-cand">
-                    <div class="w-cand-top"><span class="w-cand-price">307 000 kr</span><span class="w-cand-meta">38 000 km · 2022</span></div>
-                    <div class="w-cand-bot">+18 000 kr · 4k flere km <span class="w-cand-link">→ Se annonse</span></div>
-                  </div>
-                  <div class="w-cand">
-                    <div class="w-cand-top"><span class="w-cand-price">312 000 kr</span><span class="w-cand-meta">41 000 km · 2022</span></div>
-                    <div class="w-cand-bot">+23 000 kr · 7k flere km <span class="w-cand-link">→ Se annonse</span></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- /WIDGET -->
-        </div>
-
-        <div class="state-switcher" role="tablist" aria-label="Demo-tilstand">
-          <span class="state-switcher-label">Demo-tilstand</span>
-          <div class="state-switcher-row" id="switcher">
-            <button type="button" class="state-chip is-active" data-state="kupp">
-              <span class="state-chip-label">Kupp</span><span class="state-chip-sub">A · −18 000</span>
-            </button>
-            <button type="button" class="state-chip" data-state="riktig">
-              <span class="state-chip-label">Riktig</span><span class="state-chip-sub">B · ±0</span>
-            </button>
-            <button type="button" class="state-chip" data-state="over">
-              <span class="state-chip-label">Overpriset</span><span class="state-chip-sub">D · +29 000</span>
-            </button>
-            <button type="button" class="state-chip" data-state="laster">
-              <span class="state-chip-label">Laster</span><span class="state-chip-sub">~ 1.2s</span>
-            </button>
-          </div>
-        </div>
+      <div class="hero-right" style="display:flex;align-items:center;justify-content:center;">
+        <div id="skyscraper-root"></div>
       </div>
     </div>
   </section>
@@ -1596,122 +1487,169 @@ a { color: inherit; }
   </div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  const STATES = {
-    kupp: {
-      confidence: 'høy', grade: 'A', gradeColor: 'var(--good)',
-      headline: 'Sterkt kupp', headlineColor: 'var(--good)',
-      headlineMeta: 'Snitt 307 400 kr · 14 referanser',
-      est: '295 000–322 000', marker: 18,
-      negotiate: 'Be om 8 000 – 14 000 kr avslag',
-      negotiateColor: 'var(--good)',
-      negotiateSub: 'Litt under markedet — det finnes rom for forhandling.',
-      candidates: `
-        <div class="w-cand">
-          <div class="w-cand-top"><span class="w-cand-price">307 000 kr</span><span class="w-cand-meta">38 000 km · 2022</span></div>
-          <div class="w-cand-bot">+18 000 kr · 4k flere km <span class="w-cand-link">→ Se annonse</span></div>
-        </div>
-        <div class="w-cand">
-          <div class="w-cand-top"><span class="w-cand-price">312 000 kr</span><span class="w-cand-meta">41 000 km · 2022</span></div>
-          <div class="w-cand-bot">+23 000 kr · 7k flere km <span class="w-cand-link">→ Se annonse</span></div>
-        </div>`,
-    },
-    riktig: {
-      confidence: 'middels', grade: 'B', gradeColor: 'var(--ink)',
-      headline: 'Riktig priset', headlineColor: 'var(--ink)',
-      headlineMeta: 'Snitt 291 000 kr · 11 referanser',
-      est: '278 000–301 000', marker: 52,
-      negotiate: 'Lite rom for forhandling',
-      negotiateColor: 'var(--ink)',
-      negotiateSub: 'Prisen ligger i midtsjiktet for sammenliknbare biler.',
-      candidates: `
-        <div class="w-cand">
-          <div class="w-cand-top"><span class="w-cand-price">286 000 kr</span><span class="w-cand-meta">36 000 km · 2022</span></div>
-          <div class="w-cand-bot">−3 000 kr · 2k færre km <span class="w-cand-link">→ Se annonse</span></div>
-        </div>
-        <div class="w-cand">
-          <div class="w-cand-top"><span class="w-cand-price">294 000 kr</span><span class="w-cand-meta">40 000 km · 2022</span></div>
-          <div class="w-cand-bot">+5 000 kr · 6k flere km <span class="w-cand-link">→ Se annonse</span></div>
-        </div>`,
-    },
-    over: {
-      confidence: 'høy', grade: 'D', gradeColor: 'var(--bad)',
-      headline: 'Overpriset', headlineColor: 'var(--bad)',
-      headlineMeta: 'Snitt 264 000 kr · 18 referanser',
-      est: '248 000–278 000', marker: 88,
-      negotiate: 'Be om 22 000 – 35 000 kr avslag',
-      negotiateColor: 'var(--bad)',
-      negotiateSub: 'Klart over markedet — vurder å vente eller forhandle hardt.',
-      candidates: `
-        <div class="w-cand">
-          <div class="w-cand-top"><span class="w-cand-price">258 000 kr</span><span class="w-cand-meta">34 000 km · 2022</span></div>
-          <div class="w-cand-bot">−31 000 kr · 0k færre km <span class="w-cand-link">→ Se annonse</span></div>
-        </div>
-        <div class="w-cand">
-          <div class="w-cand-top"><span class="w-cand-price">267 000 kr</span><span class="w-cand-meta">39 000 km · 2022</span></div>
-          <div class="w-cand-bot">−22 000 kr · 5k flere km <span class="w-cand-link">→ Se annonse</span></div>
-        </div>`,
-    },
-    laster: {
-      confidence: '———', grade: '—', gradeColor: 'var(--ink-faint)',
-      headline: 'Analyserer annonsen…', headlineColor: 'var(--ink-2)',
-      headlineMeta: '', est: '— — —', marker: null,
-      negotiate: '', negotiateColor: 'var(--ink-dim)',
-      negotiateSub: '',
-      candidates: `
-        <div class="w-cand" style="opacity:0.5"><div class="w-cand-top"><span class="w-cand-price">———</span><span class="w-cand-meta">—</span></div></div>
-        <div class="w-cand" style="opacity:0.5"><div class="w-cand-top"><span class="w-cand-price">———</span><span class="w-cand-meta">—</span></div></div>`,
-    },
-  };
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+<script>
+(function(){
+const MINT="#7FE0C4",ICE="#9AB0C4",BG="#070B12",LOOP=7.0,SPEED=1.6,CTA="Legg til i Chrome";
+const OVERHEAD="Hva |skjuler| annonsen?";
+const easeOutCubic=t=>1-Math.pow(1-t,3);
+const easeOutQuint=t=>1-Math.pow(1-t,5);
+const easeOutBack=(t,s=1.7)=>1+(s+1)*Math.pow(t-1,3)+s*Math.pow(t-1,2);
+const clamp01=v=>Math.max(0,Math.min(1,v));
+const seg=(t,start,dur)=>clamp01((t-start)/dur);
 
-  const widget = document.getElementById('widget');
-  const switcher = document.getElementById('switcher');
+const root=document.getElementById('skyscraper-root');
+root.style.cssText='display:flex;flex-direction:column;align-items:center;gap:20px;';
 
-  function setState(key) {
-    const s = STATES[key];
-    if (!s) return;
-    widget.dataset.state = key;
-    widget.querySelector('[data-bind="confidence"]').textContent = s.confidence;
-    const grade = widget.querySelector('[data-bind="grade"]');
-    grade.textContent = s.grade;
-    grade.style.color = s.gradeColor;
-    const headline = widget.querySelector('[data-bind="headline"]');
-    headline.textContent = s.headline;
-    headline.style.color = s.headlineColor;
-    widget.querySelector('[data-bind="headlineMeta"]').textContent = s.headlineMeta;
-    widget.querySelector('[data-bind="est"]').textContent = s.est;
-    const marker = widget.querySelector('[data-bind="marker"]');
-    if (s.marker == null) {
-      marker.style.opacity = '0';
-    } else {
-      marker.style.opacity = '1';
-      marker.style.left = s.marker + '%';
-    }
-    const neg = widget.querySelector('[data-bind="negotiate"]');
-    neg.textContent = s.negotiate;
-    neg.style.color = s.negotiateColor;
-    widget.querySelector('[data-bind="negotiateSub"]').textContent = s.negotiateSub;
-    widget.querySelector('[data-bind="candidates"]').innerHTML = s.candidates;
+const sky=document.createElement('div');
+sky.style.cssText='width:300px;height:600px;background:'+BG+';position:relative;overflow:hidden;font-family:Inter,sans-serif;color:#E6EDF5;border-radius:6px;';
 
-    [...switcher.querySelectorAll('.state-chip')].forEach((b) => {
-      b.classList.toggle('is-active', b.dataset.state === key);
-    });
+const glow=document.createElement('div');
+glow.style.cssText='position:absolute;left:50%;top:45%;width:500px;height:500px;transform:translate(-50%,-50%);filter:blur(20px);pointer-events:none;border-radius:50%;';
+sky.appendChild(glow);
+
+const grid=document.createElement('div');
+grid.style.cssText='position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);background-size:32px 32px;mask-image:radial-gradient(ellipse at center,black 30%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at center,black 30%,transparent 75%);';
+sky.appendChild(grid);
+
+const inner=document.createElement('div');
+inner.style.cssText='position:absolute;inset:0;padding:20px;display:flex;flex-direction:column;';
+
+const topRow=document.createElement('div');
+topRow.style.cssText='display:flex;align-items:center;gap:8px;';
+topRow.innerHTML='<svg id="sky-logo-top" width="12" height="12" viewBox="0 0 18 18" fill="none"></svg>'
+  +'<span style="font-family:Newsreader,Georgia,serif;font-size:13px;">OversiktPro</span>'
+  +'<span style="margin-left:auto;font-family:monospace;font-size:8px;letter-spacing:0.14em;padding:2px 5px;border:1px solid rgba(255,255,255,0.12);border-radius:3px;color:'+ICE+';">CHROME</span>';
+inner.appendChild(topRow);
+
+const parts=OVERHEAD.split('|');
+const h2el=document.createElement('h2');
+h2el.style.cssText='font-family:Newsreader,Georgia,serif;font-weight:400;font-size:28px;line-height:1.05;letter-spacing:-0.02em;margin:22px 0 0;color:#F2F6FA;';
+h2el.innerHTML=(parts[0]||'')+(parts[1]?'<em style="color:'+MINT+';font-style:italic;">'+parts[1]+'</em>':'')+(parts[2]||'');
+inner.appendChild(h2el);
+
+const wdgWrap=document.createElement('div');
+wdgWrap.style.cssText='margin-top:24px;';
+wdgWrap.innerHTML=
+  '<div id="sky-wdg" style="transform-origin:center top;background:linear-gradient(180deg,#101826,#0C1320);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:16px;position:relative;">'
+  +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">'
+  +'<div style="width:26px;height:26px;border-radius:6px;background:linear-gradient(160deg,#1A2A3D,#0F1A28);border:1px solid rgba(127,224,196,0.18);display:flex;align-items:center;justify-content:center;">'
+  +'<svg id="sky-logo-wdg" width="14" height="14" viewBox="0 0 18 18" fill="none"></svg></div>'
+  +'<span style="font-family:Newsreader,Georgia,serif;font-size:14px;color:#E6EDF5;">OversiktPro</span>'
+  +'<span style="font-family:monospace;font-size:8px;letter-spacing:0.14em;padding:2px 5px;border:1px solid rgba(255,255,255,0.12);border-radius:3px;color:'+ICE+';">BETA</span>'
+  +'<span style="margin-left:auto;font-size:10px;color:#6B7E92;">finn.no</span></div>'
+  +'<div id="sky-eye" style="font-family:monospace;font-size:9px;letter-spacing:0.14em;color:#6B7E92;text-transform:uppercase;">Deal Score</div>'
+  +'<div id="sky-score" style="font-family:Newsreader,Georgia,serif;font-size:56px;color:'+MINT+';line-height:1;margin-top:6px;transform-origin:left center;">A−</div>'
+  +'<div id="sky-deal" style="font-family:Newsreader,Georgia,serif;font-size:22px;color:'+MINT+';margin-top:14px;min-height:28px;"></div>'
+  +'<div id="sky-dmeta" style="font-size:10px;color:#7E8FA0;margin-top:4px;">Snitt 309 900 kr · 6 biler</div>'
+  +'<div id="sky-div" style="height:1px;background:rgba(255,255,255,0.06);margin:14px 0;"></div>'
+  +'<div id="sky-pb">'
+  +'<div style="font-family:monospace;font-size:9px;letter-spacing:0.14em;color:#6B7E92;text-transform:uppercase;">Annonsepris</div>'
+  +'<div style="font-size:18px;color:#E6EDF5;font-weight:600;margin-top:4px;">279 999 kr</div></div>'
+  +'<div style="position:relative;height:5px;background:rgba(255,255,255,0.05);border-radius:3px;margin-top:10px;">'
+  +'<div id="sky-bar" style="position:absolute;left:8%;width:0%;top:0;bottom:0;background:'+MINT+';border-radius:3px;"></div>'
+  +'<div id="sky-mkr" style="position:absolute;left:8%;top:-3px;width:3px;height:11px;background:#E6EDF5;border-radius:1px;opacity:0;"></div>'
+  +'</div></div>';
+inner.appendChild(wdgWrap);
+
+const ctaWrap=document.createElement('div');
+ctaWrap.style.cssText='margin-top:auto;';
+ctaWrap.innerHTML=
+  '<div id="sky-cta" style="padding:12px 16px;background:'+MINT+';color:#062018;border-radius:999px;font-weight:600;font-size:13px;text-align:center;display:flex;align-items:center;justify-content:center;gap:8px;">'
+  +CTA
+  +'<svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7.5 3.5L11 7l-3.5 3.5" stroke="#062018" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>'
+  +'<div style="font-family:monospace;font-size:9px;letter-spacing:0.14em;color:#6B7E92;text-align:center;margin-top:10px;text-transform:uppercase;">Gratis Chrome-utvidelse</div>';
+inner.appendChild(ctaWrap);
+sky.appendChild(inner);
+root.appendChild(sky);
+
+const controls=document.createElement('div');
+controls.style.cssText='display:flex;align-items:center;gap:14px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:999px;padding:8px 16px;width:360px;';
+const playBtn=document.createElement('button');
+playBtn.style.cssText='width:28px;height:28px;border-radius:50%;background:'+MINT+';border:none;color:#062018;cursor:pointer;font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;';
+playBtn.textContent='❚❚';
+const scrubber=document.createElement('input');
+scrubber.type='range';scrubber.min=0;scrubber.max=LOOP;scrubber.step=0.01;scrubber.value=0;
+scrubber.style.cssText='flex:1;accent-color:'+MINT+';';
+const timeLbl=document.createElement('div');
+timeLbl.style.cssText='font-family:monospace;font-size:11px;color:'+ICE+';min-width:60px;text-align:right;';
+controls.appendChild(playBtn);controls.appendChild(scrubber);controls.appendChild(timeLbl);
+root.appendChild(controls);
+
+const loopLbl=document.createElement('div');
+loopLbl.style.cssText='font-family:monospace;font-size:10px;letter-spacing:0.14em;color:#6B7E92;text-transform:uppercase;';
+loopLbl.textContent='Skyscraper · 300 × 600 · '+LOOP+'s loop';
+root.appendChild(loopLbl);
+
+function drawLogo(svgEl,h){
+  svgEl.innerHTML=[[2,h[0]],[6,h[1]],[10,h[2]],[14,h[3]]].map(([x,ht],i)=>
+    '<rect x="'+x+'" y="'+(16-ht)+'" width="2.5" height="'+ht+'" rx="0.5" fill="'+MINT+'"'+(i===3?' opacity="0.55"':'')+'/>'
+  ).join('');
+}
+
+let playing=true,tNow=0,lastTs=performance.now();
+
+playBtn.addEventListener('click',()=>{playing=!playing;playBtn.textContent=playing?'❚❚':'▶';});
+scrubber.addEventListener('input',e=>{tNow=parseFloat(e.target.value);playing=false;playBtn.textContent='▶';});
+
+function loop(now){
+  const dt=(now-lastTs)/1000;lastTs=now;
+  if(playing){tNow=(tNow+dt*SPEED)%LOOP;}
+  scrubber.value=tNow;
+  timeLbl.textContent=tNow.toFixed(2)+'s';
+  const t=tNow;
+
+  const hArr=[6,10,14,8].map((h,i)=>Math.max(0.5,h*easeOutBack(seg(t,1.5+i*0.06,0.5))));
+  const lt=document.getElementById('sky-logo-top');if(lt)drawLogo(lt,hArr);
+  const lw=document.getElementById('sky-logo-wdg');if(lw)drawLogo(lw,hArr);
+
+  const bgT=easeOutCubic(seg(t,0,0.6));
+  glow.style.background='radial-gradient(circle,rgba(127,224,196,'+(0.18*bgT)+') 0%,transparent 60%)';
+  grid.style.opacity=bgT;
+  topRow.style.opacity=easeOutCubic(seg(t,0.8,0.5));
+  const titleT=easeOutQuint(seg(t,0.2,0.8));
+  h2el.style.transform='translateY('+((1-titleT)*-80)+'px)';
+  h2el.style.opacity=titleT;
+  sky.style.opacity=1-easeOutCubic(seg(t,6.2,0.7));
+
+  const popT=seg(t,1.4,0.7);
+  const wdg=document.getElementById('sky-wdg');
+  if(wdg){
+    wdg.style.transform='translateY('+((1-easeOutQuint(popT))*24)+'px) scale('+(0.85+0.15*easeOutBack(popT))+')';
+    wdg.style.opacity=easeOutCubic(popT);
+    wdg.style.boxShadow='0 30px 60px -10px rgba(0,0,0,0.6),0 0 0 1px rgba(127,224,196,'+(0.04+0.08*popT)+')';
   }
-
-  switcher.addEventListener('click', (e) => {
-    const btn = e.target.closest('.state-chip');
-    if (!btn) return;
-    stopAutoplay();
-    setState(btn.dataset.state);
-  });
-
-  const order = ['kupp', 'riktig', 'over', 'laster'];
-  let i = 0;
-  let auto = setInterval(() => {
-    i = (i + 1) % order.length;
-    setState(order[i]);
-  }, 3800);
-  function stopAutoplay() { clearInterval(auto); }
+  const eyeT=easeOutCubic(seg(t,2.0,0.4));
+  const eye=document.getElementById('sky-eye');
+  if(eye){eye.style.opacity=eyeT;eye.style.transform='translateY('+((1-eyeT)*6)+'px)';}
+  const scoreT=easeOutBack(seg(t,2.2,0.55));
+  const sc=document.getElementById('sky-score');
+  if(sc){sc.style.transform='scale('+(0.4+0.6*scoreT)+')';sc.style.opacity=clamp01(scoreT);}
+  const dealT=easeOutCubic(seg(t,2.4,0.5));
+  const dealText="God deal",dc=Math.floor(dealT*dealText.length);
+  const de=document.getElementById('sky-deal');
+  if(de)de.textContent=dealText.slice(0,dc)+(dc<dealText.length&&dealT>0?'▍':'');
+  const dm=document.getElementById('sky-dmeta');
+  if(dm)dm.style.opacity=clamp01((dealT-0.6)/0.4);
+  const priceT=easeOutCubic(seg(t,2.6,0.4));
+  const pb=document.getElementById('sky-pb');
+  if(pb){pb.style.opacity=priceT;pb.style.transform='translateY('+((1-priceT)*6)+'px)';}
+  const dv=document.getElementById('sky-div');if(dv)dv.style.opacity=priceT;
+  const barT=easeOutQuint(seg(t,2.7,0.7));
+  const bar=document.getElementById('sky-bar');if(bar)bar.style.width=(barT*54)+'%';
+  const mkr=document.getElementById('sky-mkr');if(mkr)mkr.style.opacity=barT;
+  const ctaT=easeOutCubic(seg(t,3.0,0.6));
+  const pulse=1+0.04*Math.sin((t-3.0)*4)*(t>3&&t<5.5?1:0);
+  const ctaBtn=document.getElementById('sky-cta');
+  if(ctaBtn){
+    ctaBtn.parentElement.style.opacity=ctaT;
+    ctaBtn.parentElement.style.transform='translateY('+((1-ctaT)*12)+'px) scale('+pulse+')';
+    ctaBtn.style.boxShadow='0 0 '+(20+10*Math.sin(t*3))+'px rgba(127,224,196,0.35)';
+  }
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
 </script>
 
 </body>
